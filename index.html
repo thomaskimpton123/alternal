@@ -201,7 +201,35 @@
   .footer-links span{cursor:pointer;transition:.2s}
   .footer-links span:hover{color:#fff}
 
-  .pill,.magbtn,#enterBtn,#scBack,#scNext,#pgBack,#pgNext,#ctaBack,#proofBack,#proofNext,#faqBack,#toFaqDirect,#toFaq,.tp-play{touch-action:manipulation}
+  /* ── vault: sample packs ── */
+  #vault{position:fixed;inset:0;z-index:15;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+    text-align:center;opacity:0;pointer-events:none;transition:opacity .8s ease;padding:70px 20px 30px;overflow-y:auto}
+  .vault-filters{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:18px 0 4px;pointer-events:auto}
+  .filter-chip{border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:6px 14px;font-size:10.5px;
+    letter-spacing:.5px;text-transform:uppercase;color:var(--dim);cursor:pointer;transition:.2s;background:none}
+  .filter-chip.active{background:rgba(139,92,246,.22);border-color:var(--violet);color:#fff}
+  .vault-grid{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;max-width:780px;margin:18px 0;pointer-events:auto}
+  .pack-card{width:200px;background:rgba(20,18,28,.55);border:1px solid rgba(255,255,255,.12);border-radius:14px;
+    padding:16px 18px;text-align:left;transition:border-color .25s,box-shadow .25s}
+  .pack-card:hover{border-color:rgba(139,92,246,.5);box-shadow:0 0 24px rgba(139,92,246,.2)}
+  .pack-card.hidden{display:none}
+  .pack-genre{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--cyan)}
+  .pack-title{font-family:var(--display);font-size:15px;font-weight:500;color:#fff;margin-top:6px}
+  .pack-meta{font-size:11px;color:var(--dim);margin-top:4px}
+  .pack-wave{width:100%;height:28px;display:block;margin-top:10px}
+  .pack-controls{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+  .pack-play{width:26px;height:26px;border-radius:50%;border:1px solid rgba(139,92,246,.6);background:rgba(139,92,246,.15);
+    color:#fff;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none}
+  .pack-play:hover{background:rgba(139,92,246,.35)}
+  .pack-price{font-family:var(--display);font-size:13px;color:#fff}
+  .vault-email{display:flex;gap:8px;margin:20px 0 6px;max-width:340px;width:100%;pointer-events:auto}
+  .vault-email input{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);border-radius:24px;
+    padding:9px 16px;color:#fff;font-size:12.5px;font-family:var(--sans);outline:none}
+  .vault-email input:focus{border-color:var(--violet)}
+  .vault-email button{white-space:nowrap}
+  .vault-email-note{font-size:10px;color:#5a5768;margin-bottom:4px}
+
+  .pill,.magbtn,#enterBtn,#scBack,#scNext,#pgBack,#pgNext,#ctaBack,#proofBack,#proofNext,#faqBack,#toFaqDirect,#toFaq,#vaultBack,#vaultNext,.tp-play,.pack-play,.filter-chip{touch-action:manipulation}
 
   /* ── mobile (phones / narrow viewports) ── */
   @media (max-width:700px){
@@ -212,10 +240,11 @@
     .sub{font-size:13px;max-width:300px;line-height:1.55}
     #scrollcue{bottom:calc(28px + env(safe-area-inset-bottom))}
 
-    #beyond,#passages,#cta,#proof,#faq{padding:64px 16px calc(30px + env(safe-area-inset-bottom));
+    #beyond,#passages,#cta,#proof,#faq,#vault{padding:64px 16px calc(30px + env(safe-area-inset-bottom));
       overflow-y:auto;-webkit-overflow-scrolling:touch}
     .proof-marquee{font-size:11px}
     .quote-wrap,.faq-list,footer.site-footer{max-width:100%}
+    .pack-card{width:100%;max-width:280px}
     #beyond h2,.pg-h2{font-size:clamp(24px,7vw,34px)}
     .cta-h2{font-size:clamp(22px,7vw,32px)}
     .sc-note{font-size:11px;padding:0 4px}
@@ -239,7 +268,7 @@
 
     .form-panel{max-width:100%;padding:24px 20px}
     .sc-actions,.cta-actions{gap:10px;margin-top:16px}
-    #scBack,#scNext,#pgBack,#pgNext,#ctaBack,#proofBack,#proofNext,#faqBack,#toFaqDirect,#toFaq{padding:9px 18px;font-size:10.5px}
+    #scBack,#scNext,#pgBack,#pgNext,#ctaBack,#proofBack,#proofNext,#faqBack,#toFaqDirect,#toFaq,#vaultBack,#vaultNext{padding:9px 18px;font-size:10.5px}
   }
 </style>
 </head>
@@ -277,7 +306,24 @@
   <div class="sc-hint" id="scHint">drag to orbit · click to open</div>
   <div class="sc-actions">
     <button id="scBack">◀ Rewind to the rift</button>
-    <button id="scNext">Passages ▸</button>
+    <button id="scNext">The Vault ▸</button>
+  </div>
+</div>
+
+<div id="vault">
+  <div class="tag">Sample packs</div>
+  <h2 class="pg-h2">The Vault</h2>
+  <div class="sc-note">Loops &amp; one-shots pulled from the same sessions as the tracks above. (Placeholder packs &amp; previews — swap in your real catalog and checkout when ready.)</div>
+  <div class="vault-filters" id="vaultFilters"></div>
+  <div class="vault-grid" id="vaultGrid"></div>
+  <div class="vault-email-note">Get a free starter pack when it drops</div>
+  <form class="vault-email" id="vaultEmailForm">
+    <input type="email" placeholder="you@email.com" required />
+    <button type="submit" class="magbtn">Tune In</button>
+  </form>
+  <div class="sc-actions">
+    <button id="vaultBack">◀ Back to transmissions</button>
+    <button id="vaultNext">Passages ▸</button>
   </div>
 </div>
 
@@ -287,7 +333,7 @@
   <div class="sc-note">Pick a doorway. Tap to see what's inside. (Placeholder service copy — swap in your real offerings.)</div>
   <div class="passages-wrap" id="pgWrap"></div>
   <div class="sc-actions">
-    <button id="pgBack">◀ Back to transmissions</button>
+    <button id="pgBack">◀ Back to the Vault</button>
     <button id="pgNext">Echoes ▸</button>
   </div>
 </div>
@@ -451,8 +497,15 @@ function animate(){
   riftGroup.rotation.y = targetRotY + t*0.03;
 
   // shimmer: slight per-frame pulsation of point size via material size + gentle scale breathing
-  const breathe = 1 + Math.sin(t*0.8)*0.015;
+  // + a stylized rhythmic pulse (120bpm feel) standing in for real audio-reactivity —
+  // there's no actual track loaded/playing anywhere yet, so this is a beat-shaped
+  // ambient effect, not analysis of live audio. Wire up Web Audio's AnalyserNode
+  // here once real playback exists for the genuine effect from the design spec.
+  const beatPhase = (t*2) % 1; // 2 beats/sec ≈ 120bpm
+  const pulse = Math.pow(1 - beatPhase, 3) * 0.025;
+  const breathe = 1 + Math.sin(t*0.8)*0.015 + pulse;
   riftGroup.scale.set(breathe, breathe, breathe);
+  mat.size = 0.16 + pulse*0.6;
 
   if(!flying){
     camera.position.z = 14 + Math.sin(t*0.25)*0.15;
@@ -472,7 +525,8 @@ window.addEventListener('resize', ()=>{
 const hero=document.getElementById('hero'), beyond=document.getElementById('beyond'),
   flash=document.getElementById('flash'), navEl=document.getElementById('nav'),
   passages=document.getElementById('passages'), cta=document.getElementById('cta'),
-  proof=document.getElementById('proof'), faq=document.getElementById('faq');
+  proof=document.getElementById('proof'), faq=document.getElementById('faq'),
+  vault=document.getElementById('vault');
 
 function flyThrough(){
   if(flying||crossed) return;
@@ -517,11 +571,19 @@ document.querySelectorAll('.navlinks span')[0].addEventListener('click', flyThro
 document.getElementById('scNext').addEventListener('click', ()=>{
   beyond.style.opacity=0; beyond.style.pointerEvents='none';
   deselectPanel();
+  vault.style.opacity=1; vault.style.pointerEvents='auto';
+});
+document.getElementById('vaultBack').addEventListener('click', ()=>{
+  vault.style.opacity=0; vault.style.pointerEvents='none';
+  beyond.style.opacity=1; beyond.style.pointerEvents='auto';
+});
+document.getElementById('vaultNext').addEventListener('click', ()=>{
+  vault.style.opacity=0; vault.style.pointerEvents='none';
   passages.style.opacity=1; passages.style.pointerEvents='auto';
 });
 document.getElementById('pgBack').addEventListener('click', ()=>{
   passages.style.opacity=0; passages.style.pointerEvents='none';
-  beyond.style.opacity=1; beyond.style.pointerEvents='auto';
+  vault.style.opacity=1; vault.style.pointerEvents='auto';
 });
 document.getElementById('pgNext').addEventListener('click', ()=>{
   passages.style.opacity=0; passages.style.pointerEvents='none';
@@ -592,6 +654,64 @@ FAQS.forEach(f=>{
   el.innerHTML=`<div class="faq-q"><span>${f.q}</span><span class="plus">+</span></div><div class="faq-a"><p>${f.a}</p></div>`;
   el.querySelector('.faq-q').addEventListener('click', ()=>{ el.classList.toggle('open'); });
   faqList.appendChild(el);
+});
+
+/* ── vault: sample packs ── */
+const PACKS=[
+  {name:"MIDNIGHT DRIFT", genre:"Lo-Fi", bpm:82, key:"Cm", price:"$18", seed:11},
+  {name:"STATIC BLOOM", genre:"Techno", bpm:128, key:"Am", price:"$24", seed:12},
+  {name:"HOLLOW ORBIT", genre:"Ambient", bpm:70, key:"—", price:"$15", seed:13},
+  {name:"RIFT KICKS", genre:"Trap", bpm:140, key:"Gm", price:"$20", seed:14},
+  {name:"AFTERGLOW", genre:"House", bpm:122, key:"Fm", price:"$22", seed:15},
+  {name:"PALE SIGNAL", genre:"Ambient", bpm:65, key:"Dm", price:"$15", seed:16},
+];
+const vaultGrid=document.getElementById('vaultGrid'), vaultFilters=document.getElementById('vaultFilters');
+let vaultFilter='All', packPlaying=null;
+const GENRES=['All', ...new Set(PACKS.map(p=>p.genre))];
+GENRES.forEach(g=>{
+  const chip=document.createElement('div'); chip.className='filter-chip'+(g==='All'?' active':''); chip.textContent=g;
+  chip.addEventListener('click', ()=>{
+    vaultFilter=g;
+    vaultFilters.querySelectorAll('.filter-chip').forEach(c=>c.classList.toggle('active', c===chip));
+    vaultGrid.querySelectorAll('.pack-card').forEach((card,i)=>{
+      card.classList.toggle('hidden', g!=='All' && PACKS[i].genre!==g);
+    });
+  });
+  vaultFilters.appendChild(chip);
+});
+const packWaveCtxs=[];
+PACKS.forEach((p,i)=>{
+  const el=document.createElement('div'); el.className='pack-card';
+  el.innerHTML=`<div class="pack-genre">${p.genre}</div><div class="pack-title">${p.name}</div>
+    <div class="pack-meta">${p.bpm} BPM · ${p.key}</div>
+    <canvas class="pack-wave" width="170" height="28"></canvas>
+    <div class="pack-controls"><button class="pack-play" data-idx="${i}">▶</button><div class="pack-price">${p.price}</div></div>`;
+  vaultGrid.appendChild(el);
+  packWaveCtxs.push(el.querySelector('.pack-wave').getContext('2d'));
+});
+vaultGrid.addEventListener('click', e=>{
+  const btn=e.target.closest('.pack-play');
+  if(!btn) return;
+  const idx=parseInt(btn.dataset.idx,10);
+  if(packPlaying===idx){ packPlaying=null; btn.textContent='▶'; }
+  else{
+    vaultGrid.querySelectorAll('.pack-play').forEach(b=>b.textContent='▶');
+    packPlaying=idx; btn.textContent='❚❚';
+  }
+});
+let vaultLastT=null;
+function vaultTick(t){
+  if(vaultLastT===null) vaultLastT=t;
+  vaultLastT=t;
+  packWaveCtxs.forEach((ctx,i)=>{ drawWave(ctx, PACKS[i].seed, t*0.001, packPlaying===i); });
+  requestAnimationFrame(vaultTick);
+}
+requestAnimationFrame(vaultTick);
+document.getElementById('vaultEmailForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  const btn=e.target.querySelector('button');
+  btn.textContent='Signal received ✓';
+  e.target.querySelector('input').disabled=true;
 });
 
 /* ── cta + form ── */
