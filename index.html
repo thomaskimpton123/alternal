@@ -174,15 +174,17 @@
     .cta-h2{font-size:clamp(22px,7vw,32px)}
     .sc-note{font-size:11px;padding:0 4px}
 
-    /* showcase: 3D orbit → horizontal swipe carousel, no rotation */
-    .showcase-wrap{height:auto;perspective:none;touch-action:pan-x;overflow-x:auto;overflow-y:visible;
-      scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:6px 24px 16px;margin:14px 0 20px}
-    .showcase-stage{position:static;display:flex;gap:14px;transform:none !important;width:max-content;height:auto}
+    /* showcase: 3D orbit → plain vertical stack, no scroll/transform tricks
+       (avoids iOS Safari's nested-scroll-inside-fixed-overflow-hidden glitch) */
+    .showcase-wrap{height:auto;perspective:none;touch-action:auto;overflow:visible;
+      width:100%;max-width:340px;padding:0;margin:14px 0 20px}
+    .showcase-stage{position:static;display:flex;flex-direction:column;gap:10px;
+      transform:none !important;width:100%;height:auto}
     .track-panel{position:static !important;transform:none !important;margin:0 !important;
-      width:180px;height:auto;min-height:150px;flex:0 0 180px;scroll-snap-align:center}
+      width:100%;height:auto;min-height:auto;flex:none}
     .track-panel.dim{opacity:1;filter:none}
     .track-panel:hover{border-color:rgba(255,255,255,.12);box-shadow:none}
-    .sc-hint{margin-top:8px}
+    .sc-hint{display:none}
 
     /* passages: doorways → stacked full-width cards */
     .passages-wrap{flex-direction:column;align-items:center;gap:16px;margin:20px 0 24px}
