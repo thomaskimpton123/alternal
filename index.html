@@ -745,6 +745,7 @@ document.getElementById('signalForm').addEventListener('submit', e=>{
    Big/wide elements (magbtn) get a fuller pull; smaller circular ones (pill,
    nav buttons, play buttons, chips, dots) get a lighter one so they don't feel
    like they're flying off their row. */
+const hoverCapable = window.matchMedia('(hover:hover)').matches;
 function addMagnetic(el, strength){
   el.addEventListener('mousemove', e=>{
     const r=el.getBoundingClientRect();
@@ -781,7 +782,6 @@ const SERVICES=[
     bullets:["Tonal balance for streaming","Stereo width & enhancement","Delivery in every major format"]},
 ];
 const pgWrap=document.getElementById('pgWrap');
-const hoverCapable = window.matchMedia('(hover:hover)').matches;
 SERVICES.forEach(s=>{
   const el=document.createElement('div');
   el.className='passage-card';
