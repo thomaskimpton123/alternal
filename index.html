@@ -63,7 +63,7 @@
 
   /* ── the other side ── */
   #beyond{position:fixed;inset:0;z-index:15;display:flex;flex-direction:column;align-items:center;justify-content:center;
-    text-align:center;opacity:0;pointer-events:none;transition:opacity .8s ease}
+    text-align:center;opacity:0;pointer-events:none;visibility:hidden;transition:opacity .8s ease,visibility 0s linear .8s}
   #beyond .tag{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--cyan);margin-bottom:18px}
   #beyond h2{font-family:var(--display);font-size:clamp(28px,5vw,48px);font-weight:500;margin:0 0 16px;color:#fff}
   #beyond p{color:var(--dim);font-size:14px;max-width:420px;line-height:1.7;margin:0 0 30px}
@@ -112,7 +112,7 @@
 
   /* ── passages ── */
   #passages{position:fixed;inset:0;z-index:15;display:flex;flex-direction:column;align-items:center;justify-content:center;
-    text-align:center;opacity:0;pointer-events:none;transition:opacity .8s ease;padding:70px 20px 40px}
+    text-align:center;opacity:0;pointer-events:none;visibility:hidden;transition:opacity .8s ease,visibility 0s linear .8s;padding:70px 20px 40px}
   .pg-h2{font-family:var(--display);font-size:clamp(28px,5vw,48px);font-weight:500;margin:0 0 8px;color:#fff}
   .passages-wrap{display:flex;gap:22px;margin:26px 0 30px;flex-wrap:wrap;justify-content:center;pointer-events:auto}
   .passage-card{width:210px;min-height:250px;border:1px solid rgba(255,255,255,.14);border-radius:110px 110px 18px 18px;
@@ -135,7 +135,7 @@
 
   /* ── cta + form ── */
   #cta{position:fixed;inset:0;z-index:15;display:flex;flex-direction:column;align-items:center;justify-content:center;
-    text-align:center;opacity:0;pointer-events:none;transition:opacity .8s ease;padding:70px 20px 40px}
+    text-align:center;opacity:0;pointer-events:none;visibility:hidden;transition:opacity .8s ease,visibility 0s linear .8s;padding:70px 20px 40px}
   .cta-h2{font-family:var(--display);font-size:clamp(28px,5.5vw,52px);font-weight:600;margin:0 0 14px;color:#fff;
     max-width:600px;line-height:1.18}
   .cta-sub{font-size:14px;color:var(--dim);max-width:400px;margin:0 0 30px}
@@ -166,7 +166,7 @@
 
   /* ── proof / echoes ── */
   #proof{position:fixed;inset:0;z-index:15;display:flex;flex-direction:column;align-items:center;justify-content:center;
-    text-align:center;opacity:0;pointer-events:none;transition:opacity .8s ease;padding:70px 20px 40px;overflow:hidden}
+    text-align:center;opacity:0;pointer-events:none;visibility:hidden;transition:opacity .8s ease,visibility 0s linear .8s;padding:70px 20px 40px;overflow:hidden}
   .proof-marquee{position:absolute;top:16%;left:0;width:200%;display:flex;gap:60px;
     font-family:var(--display);font-size:15px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.055);
     animation:marquee 34s linear infinite;white-space:nowrap;pointer-events:none}
@@ -183,7 +183,7 @@
 
   /* ── faq + footer ── */
   #faq{position:fixed;inset:0;z-index:15;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
-    text-align:center;opacity:0;pointer-events:none;transition:opacity .8s ease;padding:70px 20px 30px;overflow-y:auto}
+    text-align:center;opacity:0;pointer-events:none;visibility:hidden;transition:opacity .8s ease,visibility 0s linear .8s;padding:70px 20px 30px;overflow-y:auto}
   .faq-list{width:100%;max-width:520px;margin:22px 0 0;pointer-events:auto;text-align:left}
   .faq-item{border-bottom:1px solid rgba(255,255,255,.1)}
   .faq-q{display:flex;align-items:center;justify-content:space-between;padding:16px 4px;cursor:pointer;
@@ -203,7 +203,7 @@
 
   /* ── vault: sample packs ── */
   #vault{position:fixed;inset:0;z-index:15;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
-    text-align:center;opacity:0;pointer-events:none;transition:opacity .8s ease;padding:70px 20px 30px;overflow-y:auto}
+    text-align:center;opacity:0;pointer-events:none;visibility:hidden;transition:opacity .8s ease,visibility 0s linear .8s;padding:70px 20px 30px;overflow-y:auto}
   .vault-filters{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:18px 0 4px;pointer-events:auto}
   .filter-chip{border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:6px 14px;font-size:10.5px;
     letter-spacing:.5px;text-transform:uppercase;color:var(--dim);cursor:pointer;transition:.2s;background:none}
@@ -542,7 +542,7 @@ function flyThrough(){
     flash.style.opacity = p<0.55 ? (p/0.55) : Math.max(0,1-((p-0.55)/0.45));
     if(p<1){ requestAnimationFrame(step); }
     else{
-      beyond.style.opacity=1; beyond.style.pointerEvents='auto';
+      beyond.style.visibility='visible'; beyond.style.opacity=1; beyond.style.pointerEvents='auto';
       flying=false;
     }
   }
@@ -559,7 +559,7 @@ document.getElementById('enterBtn').addEventListener('click', flyThrough);
 
 document.getElementById('scBack').addEventListener('click', ()=>{
   crossed=false;
-  beyond.style.opacity=0; beyond.style.pointerEvents='none';
+  beyond.style.opacity=0; beyond.style.pointerEvents='none'; beyond.style.visibility='hidden';
   camera.position.z=14;
   hero.style.opacity=1;
   navEl.style.opacity=1; navEl.style.transform='translateY(0)';
@@ -569,51 +569,51 @@ document.querySelectorAll('.navlinks span')[0].addEventListener('click', flyThro
 
 /* ── passages navigation ── */
 document.getElementById('scNext').addEventListener('click', ()=>{
-  beyond.style.opacity=0; beyond.style.pointerEvents='none';
+  beyond.style.opacity=0; beyond.style.pointerEvents='none'; beyond.style.visibility='hidden';
   deselectPanel();
-  vault.style.opacity=1; vault.style.pointerEvents='auto';
+  vault.style.visibility='visible'; vault.style.opacity=1; vault.style.pointerEvents='auto';
 });
 document.getElementById('vaultBack').addEventListener('click', ()=>{
-  vault.style.opacity=0; vault.style.pointerEvents='none';
-  beyond.style.opacity=1; beyond.style.pointerEvents='auto';
+  vault.style.opacity=0; vault.style.pointerEvents='none'; vault.style.visibility='hidden';
+  beyond.style.visibility='visible'; beyond.style.opacity=1; beyond.style.pointerEvents='auto';
 });
 document.getElementById('vaultNext').addEventListener('click', ()=>{
-  vault.style.opacity=0; vault.style.pointerEvents='none';
-  passages.style.opacity=1; passages.style.pointerEvents='auto';
+  vault.style.opacity=0; vault.style.pointerEvents='none'; vault.style.visibility='hidden';
+  passages.style.visibility='visible'; passages.style.opacity=1; passages.style.pointerEvents='auto';
 });
 document.getElementById('pgBack').addEventListener('click', ()=>{
-  passages.style.opacity=0; passages.style.pointerEvents='none';
-  vault.style.opacity=1; vault.style.pointerEvents='auto';
+  passages.style.opacity=0; passages.style.pointerEvents='none'; passages.style.visibility='hidden';
+  vault.style.visibility='visible'; vault.style.opacity=1; vault.style.pointerEvents='auto';
 });
 document.getElementById('pgNext').addEventListener('click', ()=>{
-  passages.style.opacity=0; passages.style.pointerEvents='none';
-  proof.style.opacity=1; proof.style.pointerEvents='auto';
+  passages.style.opacity=0; passages.style.pointerEvents='none'; passages.style.visibility='hidden';
+  proof.style.visibility='visible'; proof.style.opacity=1; proof.style.pointerEvents='auto';
   startQuoteRotation();
 });
 document.getElementById('proofBack').addEventListener('click', ()=>{
-  proof.style.opacity=0; proof.style.pointerEvents='none';
-  passages.style.opacity=1; passages.style.pointerEvents='auto';
+  proof.style.opacity=0; proof.style.pointerEvents='none'; proof.style.visibility='hidden';
+  passages.style.visibility='visible'; passages.style.opacity=1; passages.style.pointerEvents='auto';
   clearInterval(quoteTimer);
 });
 document.getElementById('proofNext').addEventListener('click', ()=>{
-  proof.style.opacity=0; proof.style.pointerEvents='none';
-  cta.style.opacity=1; cta.style.pointerEvents='auto';
+  proof.style.opacity=0; proof.style.pointerEvents='none'; proof.style.visibility='hidden';
+  cta.style.visibility='visible'; cta.style.opacity=1; cta.style.pointerEvents='auto';
   clearInterval(quoteTimer);
 });
 document.getElementById('ctaBack').addEventListener('click', ()=>{
-  cta.style.opacity=0; cta.style.pointerEvents='none';
-  proof.style.opacity=1; proof.style.pointerEvents='auto';
+  cta.style.opacity=0; cta.style.pointerEvents='none'; cta.style.visibility='hidden';
+  proof.style.visibility='visible'; proof.style.opacity=1; proof.style.pointerEvents='auto';
   startQuoteRotation();
 });
 function goToFaq(){
-  cta.style.opacity=0; cta.style.pointerEvents='none';
-  faq.style.opacity=1; faq.style.pointerEvents='auto';
+  cta.style.opacity=0; cta.style.pointerEvents='none'; cta.style.visibility='hidden';
+  faq.style.visibility='visible'; faq.style.opacity=1; faq.style.pointerEvents='auto';
 }
 document.getElementById('toFaqDirect').addEventListener('click', goToFaq);
 document.getElementById('toFaq').addEventListener('click', goToFaq);
 document.getElementById('faqBack').addEventListener('click', ()=>{
-  faq.style.opacity=0; faq.style.pointerEvents='none';
-  cta.style.opacity=1; cta.style.pointerEvents='auto';
+  faq.style.opacity=0; faq.style.pointerEvents='none'; faq.style.visibility='hidden';
+  cta.style.visibility='visible'; cta.style.opacity=1; cta.style.pointerEvents='auto';
 });
 
 /* ── proof: rotating testimonials ── */
