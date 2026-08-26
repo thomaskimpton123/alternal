@@ -536,11 +536,23 @@ function animate(){
 }
 animate();
 
-window.addEventListener('resize', ()=>{
-  camera.aspect = window.innerWidth/window.innerHeight;
+// Resize the WebGL canvas to match the actual layout viewport, not just window.innerHeight.
+// iOS Safari's URL bar / keyboard show-hide can leave window.innerHeight stale without firing
+// a resize event, which stretches the render buffer into a squished/smeared frame until the
+// next real resize — visualViewport is the reliable signal for those cases, and force-rendering
+// a fresh frame immediately (rather than waiting for the next rAF) clears any stale stretched frame.
+function resizeRenderer(){
+  const w = window.innerWidth, h = window.innerHeight;
+  camera.aspect = w/h;
   camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-});
+  renderer.setSize(w, h);
+  renderer.render(scene, camera);
+}
+window.addEventListener('resize', resizeRenderer);
+window.addEventListener('orientationchange', resizeRenderer);
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize', resizeRenderer);
+}
 
 /* ── fly-through transition ── */
 const hero=document.getElementById('hero'), beyond=document.getElementById('beyond'),
