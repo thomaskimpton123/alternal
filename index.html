@@ -299,7 +299,7 @@
 <div id="beyond">
   <div class="tag">You crossed over</div>
   <h2>Transmissions</h2>
-  <div class="sc-note">Six tracks, arranged like signals in orbit. Drag to rotate the cluster, click one to pull it forward. (Placeholder titles &amp; waveforms — swap in your real catalog when ready.)</div>
+  <div class="sc-note">Twelve tracks, arranged like signals in orbit. Drag to rotate the cluster, click one to pull it forward and press play.</div>
   <div class="showcase-wrap" id="scWrap">
     <div class="showcase-stage" id="scStage"></div>
   </div>
@@ -764,17 +764,79 @@ SERVICES.forEach(s=>{
 
 /* ── showcase: transmissions cluster ── */
 const TRACKS=[
-  {title:"MIDNIGHT FREQUENCY", role:"Produced", dur:"3:42", seed:1},
-  {title:"GHOST CHANNEL", role:"Mixed", dur:"4:15", seed:2},
-  {title:"VIOLET STATIC", role:"Produced & Mixed", dur:"3:08", seed:3},
-  {title:"ECHO CHAMBER", role:"Mastered", dur:"2:54", seed:4},
-  {title:"SIGNAL BLEED", role:"Produced", dur:"3:33", seed:5},
-  {title:"THE OTHER FREQUENCY", role:"Mixed & Mastered", dur:"4:02", seed:6},
+  {title:"NONSTOP", file:"audio/nonstop.mp3"},
+  {title:"DEVISTATION", file:"audio/devistation.mp3"},
+  {title:"FALLING", file:"audio/falling.mp3"},
+  {title:"ADHD", file:"audio/adhd.mp3"},
+  {title:"STAY WITH ME", file:"audio/stay-with-me.mp3"},
+  {title:"HIT YA WIT DA", file:"audio/hit-ya-wit-da.mp3"},
+  {title:"NO ONE", file:"audio/no-one.mp3"},
+  {title:"FEEL IT", file:"audio/feel-it.mp3"},
+  {title:"NOTHING IS REAL", file:"audio/nothing-is-real.mp3"},
+  {title:"OH LA LA", file:"audio/oh-la-la.mp3"},
+  {title:"PULL THE WEAPON", file:"audio/pull-the-weapon.mp3"},
+  {title:"THE CHOSEN", file:"audio/the-chosen.mp3"},
 ];
 const scStage=document.getElementById('scStage'), scWrap=document.getElementById('scWrap'), scHint=document.getElementById('scHint');
 const RADIUS=380;
 let stageRot=0, targetStageRot=0, autoRotate=true, activeIdx=null, dragging=false, dragMoved=false, dragStartX=0, dragStartRot=0;
 let panelEls=[], waveCtxs=[], playing=[];
+
+/* real audio engine: real playback + real waveforms decoded from the actual files */
+const audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+const sharedAudio = new Audio();
+sharedAudio.preload='none';
+let currentTrackIdx=null;
+function fmtTime(s){ const m=Math.floor(s/60), sec=Math.floor(s%60); return `${m}:${sec.toString().padStart(2,'0')}`; }
+async function ensurePeaks(i){
+  if(TRACKS[i].peaks) return TRACKS[i].peaks;
+  const res = await fetch(TRACKS[i].file);
+  const arr = await res.arrayBuffer();
+  const audioBuf = await audioCtx.decodeAudioData(arr);
+  const raw = audioBuf.getChannelData(0);
+  const barsCount = 40;
+  const blockSize = Math.floor(raw.length/barsCount);
+  const peaks = [];
+  for(let b=0;b<barsCount;b++){
+    let max=0;
+    for(let j=0;j<blockSize;j++){ const v=Math.abs(raw[b*blockSize+j]); if(v>max) max=v; }
+    peaks.push(max);
+  }
+  const norm = Math.max(...peaks, 0.001);
+  TRACKS[i].peaks = peaks.map(p=>p/norm);
+  TRACKS[i].duration = audioBuf.duration;
+  const durEl = panelEls[i].querySelector('.tp-dur');
+  if(durEl) durEl.textContent = fmtTime(audioBuf.duration);
+  return TRACKS[i].peaks;
+}
+function drawRealWave(ctx, peaks, progress){
+  const w=ctx.canvas.width, h=ctx.canvas.height;
+  ctx.clearRect(0,0,w,h);
+  const bw = w/peaks.length;
+  peaks.forEach((p,b)=>{
+    const barH = Math.max(2, p*h);
+    const x = b*bw;
+    const played = progress!==null && (b/peaks.length) <= progress;
+    const grad = ctx.createLinearGradient(0,h-barH,0,h);
+    grad.addColorStop(0, played? '#22e5ea':'#5b5470');
+    grad.addColorStop(1, played? '#8b5cf6':'#3a3648');
+    ctx.fillStyle=grad;
+    ctx.fillRect(x, h-barH, bw-2, barH);
+  });
+}
+sharedAudio.addEventListener('timeupdate', ()=>{
+  if(currentTrackIdx===null || !TRACKS[currentTrackIdx].peaks) return;
+  const ctx=waveCtxs[currentTrackIdx];
+  const progress = sharedAudio.duration ? sharedAudio.currentTime/sharedAudio.duration : 0;
+  drawRealWave(ctx, TRACKS[currentTrackIdx].peaks, progress);
+});
+sharedAudio.addEventListener('ended', ()=>{
+  const btn=panelEls[currentTrackIdx]?.querySelector('.tp-play');
+  if(btn) btn.textContent='▶';
+  if(currentTrackIdx!==null && TRACKS[currentTrackIdx].peaks){
+    drawRealWave(waveCtxs[currentTrackIdx], TRACKS[currentTrackIdx].peaks, 0);
+  }
+});
 
 TRACKS.forEach((tr,i)=>{
   const angle = i*(360/TRACKS.length);
@@ -784,15 +846,15 @@ TRACKS.forEach((tr,i)=>{
   el.dataset.angle=angle;
   el.innerHTML=`
     <div>
-      <div class="tp-role">${tr.role}</div>
+      <div class="tp-role">ALTERNAL</div>
       <div class="tp-title">${tr.title}</div>
     </div>
-    <div class="tp-dur">${tr.dur}</div>
+    <div class="tp-dur">--:--</div>
     <div class="tp-player">
       <canvas class="tp-wave" width="180" height="34"></canvas>
       <div class="tp-controls">
         <button class="tp-play" data-idx="${i}">▶</button>
-        <span style="font-size:10px;color:#8a879a;letter-spacing:.5px">waveform preview</span>
+        <span style="font-size:10px;color:#8a879a;letter-spacing:.5px">tap to play</span>
       </div>
     </div>`;
   el.addEventListener('click', (e)=>{
@@ -805,6 +867,7 @@ TRACKS.forEach((tr,i)=>{
   waveCtxs.push(el.querySelector('.tp-wave').getContext('2d'));
   playing.push(false);
 });
+TRACKS.forEach((tr,i)=>{ ensurePeaks(i).then(peaks=>drawRealWave(waveCtxs[i], peaks, currentTrackIdx===i ? null : 0)); });
 
 scStage.addEventListener('click', e=>{
   if(e.target===scStage && activeIdx!==null) deselectPanel();
@@ -821,17 +884,31 @@ function selectPanel(i){
   scHint.textContent='click background to close · space to play';
 }
 function deselectPanel(){
-  if(activeIdx!==null) playing[activeIdx]=false;
   activeIdx=null; autoRotate=true;
   panelEls.forEach(el=>{ el.classList.remove('active'); el.classList.remove('dim'); });
   scHint.textContent='drag to orbit · click to open';
+  sharedAudio.pause();
 }
-scStage.addEventListener('click', e=>{
+scStage.addEventListener('click', async e=>{
   const btn=e.target.closest('.tp-play');
   if(!btn) return;
   const idx=parseInt(btn.dataset.idx,10);
-  playing[idx]=!playing[idx];
-  btn.textContent = playing[idx] ? '❚❚' : '▶';
+  if(currentTrackIdx===idx && !sharedAudio.paused){
+    sharedAudio.pause();
+    btn.textContent='▶';
+    return;
+  }
+  if(currentTrackIdx!==null && currentTrackIdx!==idx){
+    const prevBtn=panelEls[currentTrackIdx].querySelector('.tp-play');
+    if(prevBtn) prevBtn.textContent='▶';
+  }
+  if(currentTrackIdx!==idx){
+    sharedAudio.src = TRACKS[idx].file;
+    currentTrackIdx = idx;
+    await ensurePeaks(idx);
+  }
+  sharedAudio.play();
+  btn.textContent='❚❚';
 });
 
 // drag to orbit
@@ -881,7 +958,6 @@ function scTick(t){
   if(autoRotate && activeIdx===null){ targetStageRot += dt*6; } // 6 deg/sec — slow, calm drift
   stageRot += (targetStageRot-stageRot)*0.12;
   scStage.style.transform=`translate(-50%,-50%) rotateY(${stageRot}deg)`;
-  waveCtxs.forEach((ctx,i)=>{ drawWave(ctx, TRACKS[i].seed, t*0.001, playing[i]); });
   requestAnimationFrame(scTick);
 }
 requestAnimationFrame(scTick);
