@@ -483,6 +483,24 @@ window.addEventListener('mousemove', e=>{
   mouseY = (e.clientY/window.innerHeight - 0.5)*2;
 });
 
+// click-and-drag "tuning" of the rift — grab empty background anywhere on the
+// site and drag; the rift twists and swells toward your pull, then springs
+// back on release. Purely ambient, no functional effect.
+let tuning=false, tuneStartX=0, tuneStartY=0, tuneTargetX=0, tuneTargetY=0, tuneX=0, tuneY=0;
+function tuneStart(x,y){ tuning=true; tuneStartX=x; tuneStartY=y; }
+function tuneMove(x,y){
+  if(!tuning) return;
+  tuneTargetX = Math.max(-1,Math.min(1,(x-tuneStartX)/220));
+  tuneTargetY = Math.max(-1,Math.min(1,(y-tuneStartY)/220));
+}
+function tuneEnd(){ tuning=false; tuneTargetX=0; tuneTargetY=0; }
+canvas.addEventListener('mousedown', e=>tuneStart(e.clientX,e.clientY));
+window.addEventListener('mousemove', e=>{ if(tuning) tuneMove(e.clientX,e.clientY); });
+window.addEventListener('mouseup', tuneEnd);
+canvas.addEventListener('touchstart', e=>tuneStart(e.touches[0].clientX,e.touches[0].clientY), {passive:true});
+canvas.addEventListener('touchmove', e=>tuneMove(e.touches[0].clientX,e.touches[0].clientY), {passive:true});
+canvas.addEventListener('touchend', tuneEnd);
+
 let t0 = performance.now();
 let crossed = false;
 let flying = false;
@@ -491,19 +509,22 @@ function animate(){
   requestAnimationFrame(animate);
   const t = (performance.now()-t0)/1000;
 
+  tuneX += (tuneTargetX-tuneX)*0.08;
+  tuneY += (tuneTargetY-tuneY)*0.08;
+
   targetRotX += (mouseY*0.12 - targetRotX)*0.04;
   targetRotY += (mouseX*0.18 - targetRotY)*0.04;
-  riftGroup.rotation.x = targetRotX + Math.sin(t*0.15)*0.03;
-  riftGroup.rotation.y = targetRotY + t*0.03;
+  riftGroup.rotation.x = targetRotX + Math.sin(t*0.15)*0.03 + tuneY*0.5;
+  riftGroup.rotation.y = targetRotY + t*0.03 + tuneX*0.5;
 
   // shimmer: slight per-frame pulsation of point size via material size + gentle scale breathing
-  // + a stylized rhythmic pulse (120bpm feel) standing in for real audio-reactivity —
-  // there's no actual track loaded/playing anywhere yet, so this is a beat-shaped
-  // ambient effect, not analysis of live audio. Wire up Web Audio's AnalyserNode
-  // here once real playback exists for the genuine effect from the design spec.
+  // + a stylized rhythmic pulse (120bpm feel) standing in for real audio-reactivity.
+  // Real playback exists now (see TRACKS/sharedAudio below) but isn't wired to this
+  // ambient loop yet — hook an AnalyserNode off sharedAudio here for the genuine effect.
   const beatPhase = (t*2) % 1; // 2 beats/sec ≈ 120bpm
   const pulse = Math.pow(1 - beatPhase, 3) * 0.025;
-  const breathe = 1 + Math.sin(t*0.8)*0.015 + pulse;
+  const tuneScale = 1 + Math.hypot(tuneX,tuneY)*0.12;
+  const breathe = (1 + Math.sin(t*0.8)*0.015 + pulse) * tuneScale;
   riftGroup.scale.set(breathe, breathe, breathe);
   mat.size = 0.16 + pulse*0.6;
 
@@ -720,14 +741,35 @@ document.getElementById('signalForm').addEventListener('submit', e=>{
   e.preventDefault();
   cta.classList.add('confirmed');
 });
-document.querySelectorAll('.magbtn').forEach(btn=>{
-  btn.addEventListener('mousemove', e=>{
-    const r=btn.getBoundingClientRect();
-    const x=(e.clientX-r.left-r.width/2)*0.25, y=(e.clientY-r.top-r.height/2)*0.25;
-    btn.style.transform=`translate(${x}px, ${y}px)`;
+/* magnetic hover — cursor proximity gently pulls clickable elements toward it.
+   Big/wide elements (magbtn) get a fuller pull; smaller circular ones (pill,
+   nav buttons, play buttons, chips, dots) get a lighter one so they don't feel
+   like they're flying off their row. */
+function addMagnetic(el, strength){
+  el.addEventListener('mousemove', e=>{
+    const r=el.getBoundingClientRect();
+    const x=(e.clientX-r.left-r.width/2)*strength, y=(e.clientY-r.top-r.height/2)*strength;
+    el.style.transform=`translate(${x}px, ${y}px)`;
   });
-  btn.addEventListener('mouseleave', ()=>{ btn.style.transform='translate(0,0)'; });
-});
+  el.addEventListener('mouseleave', ()=>{ el.style.transform='translate(0,0)'; });
+}
+if(hoverCapable){
+  document.querySelectorAll('.magbtn').forEach(el=>addMagnetic(el, 0.25));
+  document.querySelectorAll(
+    '.pill,#enterBtn,#scBack,#scNext,#pgBack,#pgNext,#ctaBack,#proofBack,#proofNext,#faqBack,#toFaqDirect,#toFaq,#vaultBack,#vaultNext,.filter-chip,.quote-dot,.pack-play'
+  ).forEach(el=>addMagnetic(el, 0.15));
+  document.querySelectorAll('.pack-card').forEach(el=>addTilt(el, 7));
+}
+
+/* card tilt — subtle 3D tilt toward the cursor on hover, desktop only */
+function addTilt(el, deg){
+  el.addEventListener('mousemove', e=>{
+    const r=el.getBoundingClientRect();
+    const px=(e.clientX-r.left)/r.width - 0.5, py=(e.clientY-r.top)/r.height - 0.5;
+    el.style.transform = `perspective(700px) rotateX(${(-py*deg).toFixed(2)}deg) rotateY(${(px*deg).toFixed(2)}deg)`;
+  });
+  el.addEventListener('mouseleave', ()=>{ el.style.transform=''; });
+}
 
 /* ── passages: doorway cards ── */
 const SERVICES=[
@@ -750,8 +792,14 @@ SERVICES.forEach(s=>{
       pgWrap.querySelectorAll('.passage-card').forEach(c=>c.classList.toggle('blurred', c!==el));
       el.classList.add('focus');
     });
+    el.addEventListener('mousemove', e=>{
+      const r=el.getBoundingClientRect();
+      const px=(e.clientX-r.left)/r.width - 0.5, py=(e.clientY-r.top)/r.height - 0.5;
+      el.style.transform = `translateY(-6px) scale(1.04) perspective(700px) rotateX(${(-py*8).toFixed(2)}deg) rotateY(${(px*8).toFixed(2)}deg)`;
+    });
     el.addEventListener('mouseleave', ()=>{
       pgWrap.querySelectorAll('.passage-card').forEach(c=>c.classList.remove('blurred','focus'));
+      el.style.transform='';
     });
   }
   el.addEventListener('click', ()=>{
@@ -961,6 +1009,10 @@ function scTick(t){
   requestAnimationFrame(scTick);
 }
 requestAnimationFrame(scTick);
+
+if(hoverCapable){
+  document.querySelectorAll('.tp-play').forEach(el=>addMagnetic(el, 0.15));
+}
 </script>
 </body>
 </html>
