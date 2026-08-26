@@ -22,6 +22,7 @@ global.document = {
   querySelectorAll(sel){ return sel==='.navlinks span' ? [new FakeEl('span'),new FakeEl('span'),new FakeEl('span')] : []; },
   createElement(tag){ return new FakeEl(tag); },
   addEventListener(){},
+  body: new FakeEl('body'),
 };
 global.window = {
   innerWidth:1000, innerHeight:800, devicePixelRatio:1,
@@ -48,3 +49,4 @@ global.THREE = {
 };
 global.location = { hash: '', pathname: '/', search: '' };
 global.history = { pushState(){} };
+global.localStorage = { getItem(){return null;}, setItem(){}, removeItem(){} };

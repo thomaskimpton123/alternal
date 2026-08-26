@@ -29,9 +29,20 @@
   canvas{display:block;position:fixed;inset:0;z-index:0;transform:translateZ(0);will-change:transform;backface-visibility:hidden}
 
   /* ── nav ── */
-  nav{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;align-items:center;justify-content:space-between;
-    padding:calc(22px + env(safe-area-inset-top)) 34px 22px;transition:opacity .5s, transform .5s}
+  nav{position:fixed;top:36px;left:0;right:0;z-index:20;display:flex;align-items:center;justify-content:space-between;
+    padding:calc(22px + env(safe-area-inset-top)) 34px 22px;transition:opacity .5s, transform .5s, top .3s ease}
+  body.banner-dismissed nav{top:0}
   .navwrap{display:flex;align-items:center;gap:14px}
+  #topBanner{position:fixed;top:0;left:0;right:0;z-index:26;height:36px;display:flex;align-items:center;
+    justify-content:center;gap:10px;background:linear-gradient(90deg,rgba(139,92,246,.25),rgba(34,229,234,.18));
+    border-bottom:1px solid rgba(255,255,255,.1);backdrop-filter:blur(8px);font-size:11.5px;color:var(--txt);
+    padding:0 44px 0 14px;transition:transform .3s ease;padding-top:env(safe-area-inset-top)}
+  #topBanner strong{color:#fff;font-weight:600}
+  #topBanner a{color:var(--cyan);text-decoration:underline;cursor:pointer}
+  #topBanner .banner-close{position:absolute;right:12px;top:50%;transform:translateY(-50%);
+    cursor:pointer;color:var(--dim);font-size:16px;line-height:1;padding:4px}
+  #topBanner .banner-close:hover{color:#fff}
+  body.banner-dismissed #topBanner{transform:translateY(-100%)}
   .glyph{width:26px;height:26px;position:relative}
   .glyph svg{width:100%;height:100%;animation:spin 14s linear infinite}
   @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
@@ -91,6 +102,7 @@
     display:flex;flex-direction:column;justify-content:space-between;text-align:left;user-select:none}
   .track-panel:hover{border-color:rgba(139,92,246,.55);box-shadow:0 0 28px rgba(139,92,246,.22)}
   .track-panel.dim{opacity:.28;filter:blur(1.5px)}
+  .track-panel.genre-dim{opacity:.2}
   .track-panel.active{background:rgba(20,18,28,.78);border-color:rgba(139,92,246,.7);
     box-shadow:0 0 50px rgba(139,92,246,.35);z-index:5}
   .tp-role{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--cyan)}
@@ -118,6 +130,12 @@
   #passages{position:fixed;inset:0;z-index:15;display:flex;flex-direction:column;align-items:center;justify-content:center;
     text-align:center;opacity:0;pointer-events:none;visibility:hidden;transition:opacity .8s ease;padding:70px 20px 40px}
   .pg-h2{font-family:var(--display);font-size:clamp(28px,5vw,48px);font-weight:500;margin:0 0 8px;color:#fff}
+  .how-it-works{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:center;margin:18px 0 4px}
+  .hiw-step{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--dim)}
+  .hiw-num{width:20px;height:20px;border-radius:50%;border:1px solid rgba(139,92,246,.5);
+    background:rgba(139,92,246,.12);color:#fff;font-size:11px;font-family:var(--display);
+    display:flex;align-items:center;justify-content:center;flex:none}
+  .hiw-arrow{color:#3a3648;font-size:12px}
   .passages-wrap{display:flex;gap:22px;margin:26px 0 30px;flex-wrap:wrap;justify-content:center;pointer-events:auto}
   .passage-card{width:210px;min-height:250px;border:1px solid rgba(255,255,255,.14);border-radius:110px 110px 18px 18px;
     background:rgba(20,18,28,.5);backdrop-filter:blur(10px);padding:36px 20px 24px;cursor:pointer;
@@ -154,6 +172,14 @@
   .cta-h2{font-family:var(--display);font-size:clamp(28px,5.5vw,52px);font-weight:600;margin:0 0 14px;color:#fff;
     max-width:600px;line-height:1.18}
   .cta-sub{font-size:14px;color:var(--dim);max-width:400px;margin:0 0 30px}
+  .proposal-preview{margin-top:26px;width:100%;max-width:340px}
+  .proposal-preview-label{font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:#5a5768;margin-bottom:8px}
+  .proposal-card{border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:16px 18px;
+    background:rgba(20,18,28,.4);text-align:left}
+  .proposal-head{display:flex;align-items:center;justify-content:space-between}
+  .proposal-name{font-family:var(--display);font-size:13px;color:#fff;font-weight:500}
+  .proposal-price{font-size:11px;color:var(--cyan)}
+  .proposal-body{font-size:12px;color:var(--dim);line-height:1.6;margin:10px 0 0}
   .magbtn{position:relative;pointer-events:auto;border:1px solid rgba(139,92,246,.6);border-radius:40px;
     padding:16px 36px;font-size:12.5px;letter-spacing:1.5px;text-transform:uppercase;color:#fff;
     background:rgba(139,92,246,.15);cursor:pointer;transition:background .25s,box-shadow .25s,transform .12s ease-out}
@@ -219,6 +245,15 @@
   /* ── vault: sample packs ── */
   #vault{position:fixed;inset:0;z-index:15;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
     text-align:center;opacity:0;pointer-events:none;visibility:hidden;transition:opacity .8s ease;padding:70px 20px 30px;overflow-y:auto}
+  #blog{position:fixed;inset:0;z-index:15;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+    text-align:center;opacity:0;pointer-events:none;visibility:hidden;transition:opacity .8s ease;padding:70px 20px 30px;overflow-y:auto}
+  .blog-list{width:100%;max-width:520px;margin:22px 0 0;pointer-events:auto;text-align:left;display:flex;flex-direction:column;gap:14px}
+  .blog-post{border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:18px 20px;
+    background:rgba(20,18,28,.4);transition:border-color .25s}
+  .blog-post:hover{border-color:rgba(139,92,246,.4)}
+  .blog-date{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--cyan)}
+  .blog-title{font-family:var(--display);font-size:15px;font-weight:500;color:#fff;margin-top:6px}
+  .blog-teaser{font-size:12px;color:var(--dim);margin-top:8px;line-height:1.6}
   .vault-filters{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:18px 0 4px;pointer-events:auto}
   .filter-chip{border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:6px 14px;font-size:10.5px;
     letter-spacing:.5px;text-transform:uppercase;color:var(--dim);cursor:pointer;transition:.2s;background:none}
@@ -227,10 +262,24 @@
   .pack-card{width:200px;background:rgba(20,18,28,.55);border:1px solid rgba(255,255,255,.12);border-radius:14px;
     padding:16px 18px;text-align:left;transition:border-color .25s,box-shadow .25s}
   .pack-card:hover{border-color:rgba(139,92,246,.5);box-shadow:0 0 24px rgba(139,92,246,.2)}
+  .pack-stems-toggle{width:100%;margin-top:10px;background:none;border:none;border-top:1px solid rgba(255,255,255,.08);
+    padding-top:8px;font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:#5a5768;cursor:pointer;text-align:center}
+  .pack-stems-toggle:hover{color:var(--cyan)}
+  .pack-stems{max-height:0;overflow:hidden;transition:max-height .3s ease}
+  .pack-card.stems-open .pack-stems{max-height:200px;margin-top:8px}
+  .pack-stem{display:flex;align-items:center;gap:8px;padding:5px 0}
+  .stem-play{width:20px;height:20px;border-radius:50%;border:1px solid rgba(139,92,246,.5);background:rgba(139,92,246,.1);
+    color:#fff;font-size:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none}
+  .stem-play:hover{background:rgba(139,92,246,.3)}
+  .stem-label{font-size:10px;color:var(--dim);flex:none;width:52px}
+  .stem-wave{flex:1;height:16px;display:block}
   .pack-card.hidden{display:none}
   .pack-genre{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--cyan)}
   .pack-title{font-family:var(--display);font-size:15px;font-weight:500;color:#fff;margin-top:6px}
   .pack-meta{font-size:11px;color:var(--dim);margin-top:4px}
+  .pack-rating{display:flex;align-items:center;gap:6px;margin-top:6px}
+  .pack-stars{font-size:11px;color:#f5c518;letter-spacing:1px}
+  .pack-reviews{font-size:10px;color:#5a5768}
   .pack-wave{width:100%;height:28px;display:block;margin-top:10px}
   .pack-controls{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
   .pack-play{width:26px;height:26px;border-radius:50%;border:1px solid rgba(139,92,246,.6);background:rgba(139,92,246,.15);
@@ -278,7 +327,7 @@
     .sub{font-size:13px;max-width:300px;line-height:1.55}
     #scrollcue{bottom:calc(28px + env(safe-area-inset-bottom))}
 
-    #beyond,#passages,#cta,#proof,#faq,#vault{padding:64px 16px calc(30px + env(safe-area-inset-bottom));
+    #beyond,#passages,#cta,#proof,#faq,#vault,#blog{padding:64px 16px calc(30px + env(safe-area-inset-bottom));
       overflow-y:auto;-webkit-overflow-scrolling:touch}
     .proof-marquee{font-size:11px}
     .quote-wrap,.faq-list,footer.site-footer{max-width:100%}
@@ -296,10 +345,13 @@
     .track-panel{position:static !important;transform:none !important;margin:0 !important;
       width:100%;height:auto;min-height:auto;flex:none}
     .track-panel.dim{opacity:1;filter:none}
+    .track-panel.genre-dim{display:none}
     .track-panel:hover{border-color:rgba(255,255,255,.12);box-shadow:none}
     .sc-hint{display:none}
 
     /* passages: doorways → stacked full-width cards */
+    .how-it-works{gap:8px}
+    .hiw-step{font-size:10.5px}
     .passages-wrap{flex-direction:column;align-items:center;gap:16px;margin:20px 0 24px}
     .passage-card{width:100%;max-width:300px;min-height:auto;border-radius:24px;padding:26px 20px 22px}
     .passage-card:hover{transform:none}
@@ -311,6 +363,7 @@
 </style>
 </head>
 <body>
+<div id="topBanner"><strong>This week:</strong> free starter pack + <strong>$12/mo</strong> full Vault access — <a id="bannerLink">tune in</a><span class="banner-close" id="bannerClose">✕</span></div>
 <canvas id="c"></canvas>
 <div id="flash"></div>
 
@@ -337,7 +390,8 @@
 <div id="beyond">
   <div class="tag">You crossed over</div>
   <h2>Transmissions</h2>
-  <div class="sc-note">Twelve tracks, arranged like signals in orbit. Drag to rotate the cluster, click one to pull it forward and press play.</div>
+  <div class="sc-note">Twelve tracks, arranged like signals in orbit. Drag to rotate the cluster, click one to pull it forward and press play. (Genre tags are placeholder — reassign to match the real vibe of each track.)</div>
+  <div class="vault-filters" id="scFilters"></div>
   <div class="showcase-wrap" id="scWrap">
     <div class="showcase-stage" id="scStage"></div>
   </div>
@@ -370,6 +424,13 @@
   <div class="tag">Three ways in</div>
   <h2 class="pg-h2">Passages</h2>
   <div class="sc-note">Pick a doorway. Tap to see what's inside. (Placeholder service copy — swap in your real offerings.)</div>
+  <div class="how-it-works">
+    <div class="hiw-step"><span class="hiw-num">1</span>Describe your project</div>
+    <div class="hiw-arrow">→</div>
+    <div class="hiw-step"><span class="hiw-num">2</span>Get a quote</div>
+    <div class="hiw-arrow">→</div>
+    <div class="hiw-step"><span class="hiw-num">3</span>Cross over together</div>
+  </div>
   <div class="passages-wrap" id="pgWrap"></div>
   <div class="sc-actions">
     <button id="pgBack">◀ Back to the Vault</button>
@@ -396,6 +457,13 @@
     <h2 class="cta-h2">Ready to send your sound somewhere else?</h2>
     <div class="cta-sub">One form, one channel. Tell me what you're building and I'll get back to you.</div>
     <button class="magbtn" id="openForm">Open a Channel</button>
+    <div class="proposal-preview">
+      <div class="proposal-preview-label">Example — not a real message, just what to expect</div>
+      <div class="proposal-card">
+        <div class="proposal-head"><span class="proposal-name">Alternal</span><span class="proposal-price">from $150</span></div>
+        <p class="proposal-body">"Hey — got your reference track, love the direction. I can turn this around in 3-5 days. Sending a quote breakdown now."</p>
+      </div>
+    </div>
   </div>
   <div class="form-panel">
     <form id="signalForm">
@@ -437,6 +505,14 @@
   </footer>
 </div>
 
+<div id="blog">
+  <div class="tag">Field notes</div>
+  <h2 class="pg-h2">Transmissions Log</h2>
+  <div class="sc-note">Notes from the other side. (Placeholder posts — swap in real writing when ready.)</div>
+  <div class="blog-list" id="blogList"></div>
+  <div class="sc-actions"><button id="blogBack">◀ Back to transmissions</button></div>
+</div>
+
 <div id="hint">prototype · hero + transition</div>
 
 <div class="site-menu-btn" id="siteMenuBtn">☰</div>
@@ -446,6 +522,7 @@
   <div class="site-menu-item" data-jump="passages">Passages</div>
   <div class="site-menu-item" data-jump="echoes">Echoes</div>
   <div class="site-menu-item" data-jump="contact">Contact</div>
+  <div class="site-menu-item" data-jump="blog">Transmissions Log</div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
@@ -617,10 +694,10 @@ const hero=document.getElementById('hero'), beyond=document.getElementById('beyo
   flash=document.getElementById('flash'), navEl=document.getElementById('nav'),
   passages=document.getElementById('passages'), cta=document.getElementById('cta'),
   proof=document.getElementById('proof'), faq=document.getElementById('faq'),
-  vault=document.getElementById('vault');
+  vault=document.getElementById('vault'), blog=document.getElementById('blog');
 
 /* ── site-wide section jump menu + hash routing ── */
-const sectionMap = {showcase:beyond, vault, passages, echoes:proof, contact:cta, faq};
+const sectionMap = {showcase:beyond, vault, passages, echoes:proof, contact:cta, faq, blog};
 function hideSectionEl(el){
   el.style.opacity=0; el.style.pointerEvents='none';
   setTimeout(()=>{ if(el.style.opacity=='0') el.style.visibility='hidden'; }, 800);
@@ -663,6 +740,16 @@ window.addEventListener('popstate', ()=>{
   const key = location.hash.slice(1);
   goTo(key || 'hero', false);
 });
+
+/* top banner: urgency + subscription hook, dismissible and remembered */
+if(localStorage.getItem('alt_banner_dismissed')==='1'){
+  document.body.classList.add('banner-dismissed');
+}
+document.getElementById('bannerClose').addEventListener('click', ()=>{
+  document.body.classList.add('banner-dismissed');
+  localStorage.setItem('alt_banner_dismissed','1');
+});
+document.getElementById('bannerLink').addEventListener('click', ()=>{ goTo('vault'); });
 
 function flyThrough(){
   if(flying||crossed) return;
@@ -793,15 +880,33 @@ FAQS.forEach(f=>{
   faqList.appendChild(el);
 });
 
+/* ── blog: transmissions log ── */
+const BLOG_POSTS=[
+  {date:"Field note 01", title:"Why loudness isn't the goal", teaser:"Chasing streaming-platform loudness targets before the mix is right just buries problems louder. Fix the balance first — the ceiling takes care of itself."},
+  {date:"Field note 02", title:"The 2-revision rule", teaser:"Most mixes don't need a tenth pass, they need a clearer brief on the first one. A tight revision policy forces better feedback, not worse mixes."},
+  {date:"Field note 03", title:"Reference tracks, used right", teaser:"A reference isn't there to be copied — it's there to catch you when your ears adjust to your own mix and stop hearing it clearly."},
+];
+const blogList=document.getElementById('blogList');
+BLOG_POSTS.forEach(p=>{
+  const el=document.createElement('div'); el.className='blog-post';
+  el.innerHTML=`<div class="blog-date">${p.date}</div><div class="blog-title">${p.title}</div><div class="blog-teaser">${p.teaser}</div>`;
+  blogList.appendChild(el);
+});
+document.getElementById('blogBack').addEventListener('click', ()=>{ goTo('showcase'); });
+
 /* ── vault: sample packs ── */
 const PACKS=[
-  {name:"MIDNIGHT DRIFT", genre:"Lo-Fi", bpm:82, key:"Cm", price:"$18", count:"32 loops", seed:11},
-  {name:"STATIC BLOOM", genre:"Techno", bpm:128, key:"Am", price:"$18", wasPrice:"$24", count:"48 one-shots", seed:12},
-  {name:"HOLLOW ORBIT", genre:"Ambient", bpm:70, key:"—", price:"$15", count:"60+ textures", seed:13},
-  {name:"RIFT KICKS", genre:"Trap", bpm:140, key:"Gm", price:"$20", count:"40 drum loops", seed:14},
-  {name:"AFTERGLOW", genre:"House", bpm:122, key:"Fm", price:"$15", wasPrice:"$22", count:"36 loops", seed:15},
-  {name:"PALE SIGNAL", genre:"Ambient", bpm:65, key:"Dm", price:"$15", count:"55+ atmospheres", seed:16},
+  {name:"MIDNIGHT DRIFT", genre:"Lo-Fi", bpm:82, key:"Cm", price:"$18", count:"32 loops", rating:4.8, reviews:24, seed:11},
+  {name:"STATIC BLOOM", genre:"Techno", bpm:128, key:"Am", price:"$18", wasPrice:"$24", count:"48 one-shots", rating:4.6, reviews:41, seed:12},
+  {name:"HOLLOW ORBIT", genre:"Ambient", bpm:70, key:"—", price:"$15", count:"60+ textures", rating:4.9, reviews:17, seed:13},
+  {name:"RIFT KICKS", genre:"Trap", bpm:140, key:"Gm", price:"$20", count:"40 drum loops", rating:4.7, reviews:33, seed:14},
+  {name:"AFTERGLOW", genre:"House", bpm:122, key:"Fm", price:"$15", wasPrice:"$22", count:"36 loops", rating:4.5, reviews:19, seed:15},
+  {name:"PALE SIGNAL", genre:"Ambient", bpm:65, key:"Dm", price:"$15", count:"55+ atmospheres", rating:4.8, reviews:12, seed:16},
 ];
+function starsHtml(rating){
+  const full = Math.round(rating);
+  return '★'.repeat(full) + '☆'.repeat(5-full);
+}
 const vaultGrid=document.getElementById('vaultGrid'), vaultFilters=document.getElementById('vaultFilters');
 let vaultFilter='All', packPlaying=null;
 const GENRES=['All', ...new Set(PACKS.map(p=>p.genre))];
@@ -823,31 +928,68 @@ function syncCanvasSize(canvas){
   if(canvas.width!==w) canvas.width=w;
   if(canvas.height!==h) canvas.height=h;
 }
+const STEM_LABELS=['Drums','Melody','Texture'];
 const packWaveCtxs=[], packWaveEls=[];
+const stemCtxs=[], stemEls=[], stemPlaying=new Set();
 PACKS.forEach((p,i)=>{
   const el=document.createElement('div'); el.className='pack-card';
   const priceHtml = p.wasPrice
     ? `<span class="pack-price-was">${p.wasPrice}</span><span class="pack-price">${p.price}</span>`
     : `<span class="pack-price">${p.price}</span>`;
+  const stemsHtml = STEM_LABELS.map((label,si)=>`
+    <div class="pack-stem">
+      <button class="stem-play" data-pack="${i}" data-stem="${si}">▶</button>
+      <span class="stem-label">${label}</span>
+      <canvas class="stem-wave" width="80" height="16"></canvas>
+    </div>`).join('');
   el.innerHTML=`<div class="pack-genre">${p.genre}</div><div class="pack-title">${p.name}</div>
     <div class="pack-meta">${p.bpm} BPM · ${p.key} · ${p.count}</div>
+    <div class="pack-rating"><span class="pack-stars">${starsHtml(p.rating)}</span><span class="pack-reviews">${p.rating.toFixed(1)} (${p.reviews})</span></div>
     <canvas class="pack-wave" width="170" height="28"></canvas>
-    <div class="pack-controls"><button class="pack-play" data-idx="${i}">▶</button><div class="pack-price-wrap">${priceHtml}</div></div>`;
+    <div class="pack-controls"><button class="pack-play" data-idx="${i}">▶</button><div class="pack-price-wrap">${priceHtml}</div></div>
+    <button class="pack-stems-toggle" data-idx="${i}">See stems ▾</button>
+    <div class="pack-stems">${stemsHtml}</div>`;
   vaultGrid.appendChild(el);
   const waveEl = el.querySelector('.pack-wave');
   syncCanvasSize(waveEl);
   packWaveEls.push(waveEl);
   packWaveCtxs.push(waveEl.getContext('2d'));
+  const packStemEls=[], packStemCtxs=[];
+  el.querySelectorAll('.stem-wave').forEach(c=>{ packStemEls.push(c); packStemCtxs.push(c.getContext('2d')); });
+  stemEls.push(packStemEls);
+  stemCtxs.push(packStemCtxs);
 });
-window.addEventListener('resize', ()=>{ packWaveEls.forEach(syncCanvasSize); tpWaveEls.forEach(syncCanvasSize); });
+window.addEventListener('resize', ()=>{
+  packWaveEls.forEach(syncCanvasSize); tpWaveEls.forEach(syncCanvasSize);
+  vaultGrid.querySelectorAll('.pack-card.stems-open .stem-wave').forEach(syncCanvasSize);
+});
 vaultGrid.addEventListener('click', e=>{
-  const btn=e.target.closest('.pack-play');
-  if(!btn) return;
-  const idx=parseInt(btn.dataset.idx,10);
-  if(packPlaying===idx){ packPlaying=null; btn.textContent='▶'; }
-  else{
-    vaultGrid.querySelectorAll('.pack-play').forEach(b=>b.textContent='▶');
-    packPlaying=idx; btn.textContent='❚❚';
+  const playBtn=e.target.closest('.pack-play');
+  if(playBtn){
+    const idx=parseInt(playBtn.dataset.idx,10);
+    if(packPlaying===idx){ packPlaying=null; playBtn.textContent='▶'; }
+    else{
+      vaultGrid.querySelectorAll('.pack-play').forEach(b=>b.textContent='▶');
+      packPlaying=idx; playBtn.textContent='❚❚';
+    }
+    return;
+  }
+  const toggleBtn=e.target.closest('.pack-stems-toggle');
+  if(toggleBtn){
+    const idx=parseInt(toggleBtn.dataset.idx,10);
+    const card=toggleBtn.closest('.pack-card');
+    const opening = !card.classList.contains('stems-open');
+    card.classList.toggle('stems-open', opening);
+    toggleBtn.textContent = opening ? 'Hide stems ▴' : 'See stems ▾';
+    if(opening) stemEls[idx].forEach(syncCanvasSize);
+    return;
+  }
+  const stemBtn=e.target.closest('.stem-play');
+  if(stemBtn){
+    const pIdx=parseInt(stemBtn.dataset.pack,10), sIdx=parseInt(stemBtn.dataset.stem,10);
+    const key=pIdx+'_'+sIdx;
+    if(stemPlaying.has(key)){ stemPlaying.delete(key); stemBtn.textContent='▶'; }
+    else{ stemPlaying.add(key); stemBtn.textContent='❚❚'; }
   }
 });
 let vaultLastT=null;
@@ -855,6 +997,9 @@ function vaultTick(t){
   if(vaultLastT===null) vaultLastT=t;
   vaultLastT=t;
   packWaveCtxs.forEach((ctx,i)=>{ drawWave(ctx, PACKS[i].seed, t*0.001, packPlaying===i); });
+  stemCtxs.forEach((packCtxs,pi)=>{
+    packCtxs.forEach((ctx,si)=>{ drawWave(ctx, PACKS[pi].seed*10+si, t*0.001, stemPlaying.has(pi+'_'+si)); });
+  });
   requestAnimationFrame(vaultTick);
 }
 requestAnimationFrame(vaultTick);
@@ -964,18 +1109,18 @@ SERVICES.forEach(s=>{
 
 /* ── showcase: transmissions cluster ── */
 const TRACKS=[
-  {title:"NONSTOP", file:"audio/nonstop.mp3"},
-  {title:"DEVISTATION", file:"audio/devistation.mp3"},
-  {title:"FALLING", file:"audio/falling.mp3"},
-  {title:"ADHD", file:"audio/adhd.mp3"},
-  {title:"STAY WITH ME", file:"audio/stay-with-me.mp3"},
-  {title:"HIT YA WIT DA", file:"audio/hit-ya-wit-da.mp3"},
-  {title:"NO ONE", file:"audio/no-one.mp3"},
-  {title:"FEEL IT", file:"audio/feel-it.mp3"},
-  {title:"NOTHING IS REAL", file:"audio/nothing-is-real.mp3"},
-  {title:"OH LA LA", file:"audio/oh-la-la.mp3"},
-  {title:"PULL THE WEAPON", file:"audio/pull-the-weapon.mp3"},
-  {title:"THE CHOSEN", file:"audio/the-chosen.mp3"},
+  {title:"NONSTOP", file:"audio/nonstop.mp3", genre:"Uptempo"},
+  {title:"DEVISTATION", file:"audio/devistation.mp3", genre:"Bass"},
+  {title:"FALLING", file:"audio/falling.mp3", genre:"Melodic"},
+  {title:"ADHD", file:"audio/adhd.mp3", genre:"Experimental"},
+  {title:"STAY WITH ME", file:"audio/stay-with-me.mp3", genre:"R&B"},
+  {title:"HIT YA WIT DA", file:"audio/hit-ya-wit-da.mp3", genre:"Trap"},
+  {title:"NO ONE", file:"audio/no-one.mp3", genre:"Melodic"},
+  {title:"FEEL IT", file:"audio/feel-it.mp3", genre:"R&B"},
+  {title:"NOTHING IS REAL", file:"audio/nothing-is-real.mp3", genre:"Ambient"},
+  {title:"OH LA LA", file:"audio/oh-la-la.mp3", genre:"Pop"},
+  {title:"PULL THE WEAPON", file:"audio/pull-the-weapon.mp3", genre:"Bass"},
+  {title:"THE CHOSEN", file:"audio/the-chosen.mp3", genre:"Cinematic"},
 ];
 const scStage=document.getElementById('scStage'), scWrap=document.getElementById('scWrap'), scHint=document.getElementById('scHint');
 const RADIUS=380;
@@ -1053,15 +1198,28 @@ sharedAudio.addEventListener('ended', ()=>{
   }
 });
 
+const scFilters=document.getElementById('scFilters');
+const SC_GENRES=['All', ...new Set(TRACKS.map(t=>t.genre))];
+SC_GENRES.forEach(g=>{
+  const chip=document.createElement('div'); chip.className='filter-chip'+(g==='All'?' active':''); chip.textContent=g;
+  chip.addEventListener('click', ()=>{
+    scFilters.querySelectorAll('.filter-chip').forEach(c=>c.classList.toggle('active', c===chip));
+    scStage.querySelectorAll('.track-panel').forEach(panel=>{
+      panel.classList.toggle('genre-dim', g!=='All' && panel.dataset.genre!==g);
+    });
+  });
+  scFilters.appendChild(chip);
+});
 TRACKS.forEach((tr,i)=>{
   const angle = i*(360/TRACKS.length);
   const el=document.createElement('div');
   el.className='track-panel';
   el.style.transform=`rotateY(${angle}deg) translateZ(${RADIUS}px)`;
   el.dataset.angle=angle;
+  el.dataset.genre=tr.genre;
   el.innerHTML=`
     <div>
-      <div class="tp-role">ALTERNAL</div>
+      <div class="tp-role">${tr.genre}</div>
       <div class="tp-title">${tr.title}</div>
     </div>
     <div class="tp-dur">--:--</div>
