@@ -569,7 +569,8 @@ function flyThrough(){
   if(flying||crossed) return;
   flying=true; crossed=true;
   hero.style.opacity=0;
-  navEl.style.opacity=0; navEl.style.transform='translateY(-12px)';
+  navEl.style.opacity=0; navEl.style.transform='translateY(-12px)'; navEl.style.pointerEvents='none';
+  setTimeout(()=>{ if(navEl.style.opacity=='0') navEl.style.visibility='hidden'; }, 500);
   const start=performance.now(), dur=1100;
   const startZ=camera.position.z;
   function step(now){
@@ -599,7 +600,7 @@ document.getElementById('scBack').addEventListener('click', ()=>{
   beyond.style.opacity=0; beyond.style.pointerEvents='none'; setTimeout(()=>{ if(beyond.style.opacity=='0') beyond.style.visibility='hidden'; }, 800);
   camera.position.z=14;
   hero.style.opacity=1;
-  navEl.style.opacity=1; navEl.style.transform='translateY(0)';
+  navEl.style.visibility='visible'; navEl.style.opacity=1; navEl.style.transform='translateY(0)'; navEl.style.pointerEvents='auto';
   deselectPanel();
 });
 document.querySelectorAll('.navlinks span')[0].addEventListener('click', flyThrough);
