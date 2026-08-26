@@ -26,8 +26,7 @@
      when the page also has a nested overflow-y:auto region (Vault, Passages, etc.
      all have one) — forcing this onto its own stable GPU compositing layer is the
      standard fix for that specific class of bug. */
-  /* TEMP DIAGNOSTIC 2026-08-26: canvas hidden to isolate a scroll-artifact bug — revert display:none once confirmed */
-  canvas{display:none;position:fixed;inset:0;z-index:0;transform:translateZ(0);will-change:transform;backface-visibility:hidden}
+  canvas{display:block;position:fixed;inset:0;z-index:0;transform:translateZ(0);will-change:transform;backface-visibility:hidden}
 
   /* ── nav ── */
   nav{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;align-items:center;justify-content:space-between;
