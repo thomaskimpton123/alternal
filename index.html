@@ -717,7 +717,14 @@ GENRES.forEach(g=>{
   });
   vaultFilters.appendChild(chip);
 });
-const packWaveCtxs=[];
+function syncCanvasSize(canvas){
+  const rect = canvas.getBoundingClientRect();
+  const w = Math.max(1, Math.round(rect.width));
+  const h = Math.max(1, Math.round(rect.height));
+  if(canvas.width!==w) canvas.width=w;
+  if(canvas.height!==h) canvas.height=h;
+}
+const packWaveCtxs=[], packWaveEls=[];
 PACKS.forEach((p,i)=>{
   const el=document.createElement('div'); el.className='pack-card';
   el.innerHTML=`<div class="pack-genre">${p.genre}</div><div class="pack-title">${p.name}</div>
@@ -725,8 +732,12 @@ PACKS.forEach((p,i)=>{
     <canvas class="pack-wave" width="170" height="28"></canvas>
     <div class="pack-controls"><button class="pack-play" data-idx="${i}">▶</button><div class="pack-price">${p.price}</div></div>`;
   vaultGrid.appendChild(el);
-  packWaveCtxs.push(el.querySelector('.pack-wave').getContext('2d'));
+  const waveEl = el.querySelector('.pack-wave');
+  syncCanvasSize(waveEl);
+  packWaveEls.push(waveEl);
+  packWaveCtxs.push(waveEl.getContext('2d'));
 });
+window.addEventListener('resize', ()=>{ packWaveEls.forEach(syncCanvasSize); tpWaveEls.forEach(syncCanvasSize); });
 vaultGrid.addEventListener('click', e=>{
   const btn=e.target.closest('.pack-play');
   if(!btn) return;
@@ -845,7 +856,7 @@ const TRACKS=[
 const scStage=document.getElementById('scStage'), scWrap=document.getElementById('scWrap'), scHint=document.getElementById('scHint');
 const RADIUS=380;
 let stageRot=0, targetStageRot=0, autoRotate=true, activeIdx=null, dragging=false, dragMoved=false, dragStartX=0, dragStartRot=0;
-let panelEls=[], waveCtxs=[], playing=[];
+let panelEls=[], waveCtxs=[], playing=[], tpWaveEls=[];
 
 /* real audio engine: real playback + real waveforms decoded from the actual files */
 const audioCtx = new (window.AudioContext||window.webkitAudioContext)();
@@ -929,7 +940,9 @@ TRACKS.forEach((tr,i)=>{
   });
   scStage.appendChild(el);
   panelEls.push(el);
-  waveCtxs.push(el.querySelector('.tp-wave').getContext('2d'));
+  const tpWaveEl = el.querySelector('.tp-wave');
+  tpWaveEls.push(tpWaveEl);
+  waveCtxs.push(tpWaveEl.getContext('2d'));
   playing.push(false);
 });
 TRACKS.forEach((tr,i)=>{ ensurePeaks(i).then(peaks=>drawRealWave(waveCtxs[i], peaks, currentTrackIdx===i ? null : 0)); });
@@ -947,6 +960,8 @@ function selectPanel(i){
     el.classList.toggle('dim', j!==i);
   });
   scHint.textContent='click background to close · space to play';
+  syncCanvasSize(tpWaveEls[i]);
+  if(TRACKS[i].peaks) drawRealWave(waveCtxs[i], TRACKS[i].peaks, currentTrackIdx===i ? null : 0);
 }
 function deselectPanel(){
   activeIdx=null; autoRotate=true;
