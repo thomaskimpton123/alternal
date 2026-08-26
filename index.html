@@ -43,7 +43,7 @@
     cursor:pointer;color:var(--dim);font-size:16px;line-height:1;padding:4px}
   #topBanner .banner-close:hover{color:#fff}
   body.banner-dismissed #topBanner{transform:translateY(-100%)}
-  .glyph{width:26px;height:26px;position:relative}
+  .glyph{width:26px;height:26px;position:relative;cursor:pointer}
   .glyph svg{width:100%;height:100%;animation:spin 14s linear infinite}
   @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
   .navlinks{display:flex;gap:30px;font-size:13px;letter-spacing:.5px;color:var(--dim)}
@@ -517,6 +517,7 @@
 
 <div class="site-menu-btn" id="siteMenuBtn">☰</div>
 <div class="site-menu" id="siteMenu">
+  <div class="site-menu-item" data-jump="hero">The Rift</div>
   <div class="site-menu-item" data-jump="showcase">Transmissions</div>
   <div class="site-menu-item" data-jump="vault">The Vault</div>
   <div class="site-menu-item" data-jump="passages">Passages</div>
@@ -629,6 +630,7 @@ canvas.addEventListener('touchend', tuneEnd);
 let t0 = performance.now();
 let crossed = false;
 let flying = false;
+let flyToken = 0;   // bumped to cancel any in-progress flyThrough animation
 let audioLevel = 0;
 let analyser=null, analyserData=null;
 
@@ -706,6 +708,8 @@ function showSectionEl(el){
   el.style.visibility='visible'; el.style.opacity=1; el.style.pointerEvents='auto';
 }
 function goTo(key, pushHash){
+  // cancel any in-flight fly-through so it can't override the destination we're setting
+  flyToken++; flying=false; flash.style.opacity=0;
   if(key==='hero'){
     Object.values(sectionMap).forEach(hideSectionEl);
     crossed=false; camera.position.z=14; hero.style.opacity=1;
@@ -754,12 +758,14 @@ document.getElementById('bannerLink').addEventListener('click', ()=>{ goTo('vaul
 function flyThrough(){
   if(flying||crossed) return;
   flying=true; crossed=true;
+  const myToken=++flyToken;
   hero.style.opacity=0;
   navEl.style.opacity=0; navEl.style.transform='translateY(-12px)'; navEl.style.pointerEvents='none';
   setTimeout(()=>{ if(navEl.style.opacity=='0') navEl.style.visibility='hidden'; }, 500);
   const start=performance.now(), dur=1100;
   const startZ=camera.position.z;
   function step(now){
+    if(myToken!==flyToken) return;   // a goTo() cancelled this fly — stop driving the camera
     const p=Math.min(1,(now-start)/dur);
     const ease=p<0.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
     camera.position.z = startZ - ease*20;
@@ -789,7 +795,11 @@ document.getElementById('scBack').addEventListener('click', ()=>{
   navEl.style.visibility='visible'; navEl.style.opacity=1; navEl.style.transform='translateY(0)'; navEl.style.pointerEvents='auto';
   deselectPanel();
 });
-document.querySelectorAll('.navlinks span')[0].addEventListener('click', flyThrough);
+const navSpans=document.querySelectorAll('.navlinks span');
+navSpans[0].addEventListener('click', flyThrough);            // Sound → fly into showcase
+navSpans[1].addEventListener('click', ()=>goTo('passages'));  // Process
+navSpans[2].addEventListener('click', ()=>goTo('contact'));   // Contact
+navEl.querySelector('.glyph').addEventListener('click', ()=>goTo('hero')); // logo → home
 
 /* ── passages navigation ── */
 document.getElementById('scNext').addEventListener('click', ()=>{
