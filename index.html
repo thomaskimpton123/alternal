@@ -44,7 +44,7 @@
   .pill:hover{background:rgba(139,92,246,.22);box-shadow:0 0 24px rgba(139,92,246,.4);border-color:var(--violet)}
 
   /* ── hero overlay ── */
-  #hero{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  #hero{position:fixed;inset:0;z-index:10;isolation:isolate;display:flex;flex-direction:column;align-items:center;justify-content:center;
     text-align:center;pointer-events:none;transition:opacity .6s ease}
   .kicker{font-size:11px;letter-spacing:5px;text-transform:uppercase;color:var(--cyan);margin-bottom:22px;
     opacity:0;animation:riseIn 1s ease forwards .3s;text-shadow:0 0 20px rgba(34,229,234,.5)}
@@ -66,7 +66,7 @@
     opacity:0;pointer-events:none}
 
   /* ── the other side ── */
-  #beyond{position:fixed;inset:0;z-index:15;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  #beyond{position:fixed;inset:0;z-index:15;isolation:isolate;display:flex;flex-direction:column;align-items:center;justify-content:center;
     text-align:center;opacity:0;pointer-events:none;visibility:hidden;transition:opacity .8s ease}
   #beyond .tag{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--cyan);margin-bottom:18px}
   #beyond h2{font-family:var(--display);font-size:clamp(28px,5vw,48px);font-weight:500;margin:0 0 16px;color:#fff}
@@ -115,7 +115,7 @@
   .sc-hint{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#4a4756;margin-top:14px}
 
   /* ── passages ── */
-  #passages{position:fixed;inset:0;z-index:15;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  #passages{position:fixed;inset:0;z-index:15;isolation:isolate;display:flex;flex-direction:column;align-items:center;justify-content:center;
     text-align:center;opacity:0;pointer-events:none;visibility:hidden;transition:opacity .8s ease;padding:70px 20px 40px}
   .pg-h2{font-family:var(--display);font-size:clamp(28px,5vw,48px);font-weight:500;margin:0 0 8px;color:#fff}
   .passages-wrap{display:flex;gap:22px;margin:26px 0 30px;flex-wrap:wrap;justify-content:center;pointer-events:auto}
@@ -138,7 +138,7 @@
   .pg-list li::before{content:"◆";position:absolute;left:0;color:var(--violet);font-size:8px;top:9px}
 
   /* ── cta + form ── */
-  #cta{position:fixed;inset:0;z-index:15;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  #cta{position:fixed;inset:0;z-index:15;isolation:isolate;display:flex;flex-direction:column;align-items:center;justify-content:center;
     text-align:center;opacity:0;pointer-events:none;visibility:hidden;transition:opacity .8s ease;padding:70px 20px 40px}
   .cta-h2{font-family:var(--display);font-size:clamp(28px,5.5vw,52px);font-weight:600;margin:0 0 14px;color:#fff;
     max-width:600px;line-height:1.18}
@@ -169,7 +169,7 @@
   .confirm p{color:var(--dim);font-size:13px;max-width:320px;margin:0 auto}
 
   /* ── proof / echoes ── */
-  #proof{position:fixed;inset:0;z-index:15;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  #proof{position:fixed;inset:0;z-index:15;isolation:isolate;display:flex;flex-direction:column;align-items:center;justify-content:center;
     text-align:center;opacity:0;pointer-events:none;visibility:hidden;transition:opacity .8s ease;padding:70px 20px 40px;overflow:hidden}
   .proof-marquee{position:absolute;top:16%;left:0;width:200%;display:flex;gap:60px;
     font-family:var(--display);font-size:15px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.055);
@@ -186,7 +186,7 @@
   .quote-dot.active{background:var(--cyan);box-shadow:0 0 8px rgba(34,229,234,.6)}
 
   /* ── faq + footer ── */
-  #faq{position:fixed;inset:0;z-index:15;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  #faq{position:fixed;inset:0;z-index:15;isolation:isolate;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
     text-align:center;opacity:0;pointer-events:none;visibility:hidden;transition:opacity .8s ease;padding:70px 20px 30px;overflow-y:auto}
   .faq-list{width:100%;max-width:520px;margin:22px 0 0;pointer-events:auto;text-align:left}
   .faq-item{border-bottom:1px solid rgba(255,255,255,.1)}
@@ -206,7 +206,7 @@
   .footer-links span:hover{color:#fff}
 
   /* ── vault: sample packs ── */
-  #vault{position:fixed;inset:0;z-index:15;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  #vault{position:fixed;inset:0;z-index:15;isolation:isolate;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
     text-align:center;opacity:0;pointer-events:none;visibility:hidden;transition:opacity .8s ease;padding:70px 20px 30px;overflow-y:auto}
   .vault-filters{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:18px 0 4px;pointer-events:auto}
   .filter-chip{border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:6px 14px;font-size:10.5px;
