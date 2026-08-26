@@ -22,7 +22,11 @@
   *{box-sizing:border-box}
   html,body{margin:0;padding:0;background:var(--bg);overflow:hidden;height:100%;width:100%}
   body{color:var(--txt);font-family:var(--sans);-webkit-font-smoothing:antialiased}
-  canvas{display:block;position:fixed;inset:0;z-index:0}
+  /* iOS Safari can visually smear/drag a position:fixed layer during touch-scroll
+     when the page also has a nested overflow-y:auto region (Vault, Passages, etc.
+     all have one) — forcing this onto its own stable GPU compositing layer is the
+     standard fix for that specific class of bug. */
+  canvas{display:block;position:fixed;inset:0;z-index:0;transform:translateZ(0);will-change:transform;backface-visibility:hidden}
 
   /* ── nav ── */
   nav{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;align-items:center;justify-content:space-between;
