@@ -236,7 +236,9 @@
   .pack-play{width:26px;height:26px;border-radius:50%;border:1px solid rgba(139,92,246,.6);background:rgba(139,92,246,.15);
     color:#fff;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none}
   .pack-play:hover{background:rgba(139,92,246,.35)}
+  .pack-price-wrap{display:flex;align-items:baseline;gap:6px}
   .pack-price{font-family:var(--display);font-size:13px;color:#fff}
+  .pack-price-was{font-size:11px;color:#5a5768;text-decoration:line-through}
   .vault-email{display:flex;gap:8px;margin:20px 0 6px;max-width:340px;width:100%;pointer-events:auto}
   .vault-email input{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);border-radius:24px;
     padding:9px 16px;color:#fff;font-size:12.5px;font-family:var(--sans);outline:none}
@@ -247,6 +249,23 @@
     margin:16px 0 4px;padding:8px 18px;border:1px solid rgba(139,92,246,.35);border-radius:24px;
     background:rgba(139,92,246,.08);font-size:11.5px;color:var(--dim);max-width:420px}
   .vault-access-price{font-family:var(--display);font-weight:600;color:#fff;font-size:13px}
+
+  /* ── site-wide jump menu ── */
+  .site-menu-btn{position:fixed;bottom:calc(22px + env(safe-area-inset-bottom));right:22px;z-index:25;
+    width:46px;height:46px;border-radius:50%;background:rgba(20,18,28,.75);border:1px solid rgba(255,255,255,.15);
+    backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;cursor:pointer;
+    font-size:16px;color:#fff;transition:.25s;pointer-events:auto}
+  .site-menu-btn:hover{border-color:var(--violet);box-shadow:0 0 20px rgba(139,92,246,.3)}
+  .site-menu{position:fixed;bottom:calc(78px + env(safe-area-inset-bottom));right:22px;z-index:25;
+    background:rgba(15,13,20,.92);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:8px;
+    backdrop-filter:blur(12px);display:flex;flex-direction:column;gap:2px;
+    opacity:0;visibility:hidden;transform:translateY(8px);pointer-events:none;
+    transition:opacity .25s ease,transform .25s ease,visibility 0s linear .25s}
+  .site-menu.open{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto;
+    transition:opacity .25s ease,transform .25s ease,visibility 0s linear 0s}
+  .site-menu-item{padding:10px 20px;font-size:12px;letter-spacing:.5px;color:var(--dim);
+    cursor:pointer;border-radius:8px;transition:.2s;white-space:nowrap;text-align:right}
+  .site-menu-item:hover{color:#fff;background:rgba(139,92,246,.15)}
 
   .pill,.magbtn,#enterBtn,#scBack,#scNext,#pgBack,#pgNext,#ctaBack,#proofBack,#proofNext,#faqBack,#toFaqDirect,#toFaq,#vaultBack,#vaultNext,.tp-play,.pack-play,.filter-chip{touch-action:manipulation}
 
@@ -420,6 +439,15 @@
 
 <div id="hint">prototype · hero + transition</div>
 
+<div class="site-menu-btn" id="siteMenuBtn">☰</div>
+<div class="site-menu" id="siteMenu">
+  <div class="site-menu-item" data-jump="showcase">Transmissions</div>
+  <div class="site-menu-item" data-jump="vault">The Vault</div>
+  <div class="site-menu-item" data-jump="passages">Passages</div>
+  <div class="site-menu-item" data-jump="echoes">Echoes</div>
+  <div class="site-menu-item" data-jump="contact">Contact</div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <script>
 const canvas = document.getElementById('c');
@@ -591,6 +619,51 @@ const hero=document.getElementById('hero'), beyond=document.getElementById('beyo
   proof=document.getElementById('proof'), faq=document.getElementById('faq'),
   vault=document.getElementById('vault');
 
+/* ── site-wide section jump menu + hash routing ── */
+const sectionMap = {showcase:beyond, vault, passages, echoes:proof, contact:cta, faq};
+function hideSectionEl(el){
+  el.style.opacity=0; el.style.pointerEvents='none';
+  setTimeout(()=>{ if(el.style.opacity=='0') el.style.visibility='hidden'; }, 800);
+}
+function showSectionEl(el){
+  el.style.visibility='visible'; el.style.opacity=1; el.style.pointerEvents='auto';
+}
+function goTo(key, pushHash){
+  if(key==='hero'){
+    Object.values(sectionMap).forEach(hideSectionEl);
+    crossed=false; camera.position.z=14; hero.style.opacity=1;
+    navEl.style.visibility='visible'; navEl.style.opacity=1; navEl.style.transform='translateY(0)'; navEl.style.pointerEvents='auto';
+    deselectPanel();
+  } else {
+    const target = sectionMap[key];
+    if(!target) return;
+    Object.entries(sectionMap).forEach(([k,el])=>{ if(k!==key) hideSectionEl(el); });
+    if(!crossed){
+      crossed=true; hero.style.opacity=0;
+      navEl.style.opacity=0; navEl.style.transform='translateY(-12px)'; navEl.style.pointerEvents='none';
+      setTimeout(()=>{ if(navEl.style.opacity=='0') navEl.style.visibility='hidden'; }, 500);
+      camera.position.z = 14-20;
+    }
+    showSectionEl(target);
+  }
+  closeSiteMenu();
+  if(pushHash!==false){
+    if(key==='hero') history.pushState(null,'', location.pathname+location.search);
+    else history.pushState(null,'', '#'+key);
+  }
+}
+const siteMenuBtn=document.getElementById('siteMenuBtn'), siteMenu=document.getElementById('siteMenu');
+function closeSiteMenu(){ siteMenu.classList.remove('open'); }
+siteMenuBtn.addEventListener('click', e=>{ e.stopPropagation(); siteMenu.classList.toggle('open'); });
+document.addEventListener('click', e=>{ if(!siteMenu.contains(e.target) && e.target!==siteMenuBtn) closeSiteMenu(); });
+siteMenu.querySelectorAll('.site-menu-item').forEach(item=>{
+  item.addEventListener('click', ()=>{ goTo(item.dataset.jump); });
+});
+window.addEventListener('popstate', ()=>{
+  const key = location.hash.slice(1);
+  goTo(key || 'hero', false);
+});
+
 function flyThrough(){
   if(flying||crossed) return;
   flying=true; crossed=true;
@@ -722,12 +795,12 @@ FAQS.forEach(f=>{
 
 /* ── vault: sample packs ── */
 const PACKS=[
-  {name:"MIDNIGHT DRIFT", genre:"Lo-Fi", bpm:82, key:"Cm", price:"$18", seed:11},
-  {name:"STATIC BLOOM", genre:"Techno", bpm:128, key:"Am", price:"$24", seed:12},
-  {name:"HOLLOW ORBIT", genre:"Ambient", bpm:70, key:"—", price:"$15", seed:13},
-  {name:"RIFT KICKS", genre:"Trap", bpm:140, key:"Gm", price:"$20", seed:14},
-  {name:"AFTERGLOW", genre:"House", bpm:122, key:"Fm", price:"$22", seed:15},
-  {name:"PALE SIGNAL", genre:"Ambient", bpm:65, key:"Dm", price:"$15", seed:16},
+  {name:"MIDNIGHT DRIFT", genre:"Lo-Fi", bpm:82, key:"Cm", price:"$18", count:"32 loops", seed:11},
+  {name:"STATIC BLOOM", genre:"Techno", bpm:128, key:"Am", price:"$18", wasPrice:"$24", count:"48 one-shots", seed:12},
+  {name:"HOLLOW ORBIT", genre:"Ambient", bpm:70, key:"—", price:"$15", count:"60+ textures", seed:13},
+  {name:"RIFT KICKS", genre:"Trap", bpm:140, key:"Gm", price:"$20", count:"40 drum loops", seed:14},
+  {name:"AFTERGLOW", genre:"House", bpm:122, key:"Fm", price:"$15", wasPrice:"$22", count:"36 loops", seed:15},
+  {name:"PALE SIGNAL", genre:"Ambient", bpm:65, key:"Dm", price:"$15", count:"55+ atmospheres", seed:16},
 ];
 const vaultGrid=document.getElementById('vaultGrid'), vaultFilters=document.getElementById('vaultFilters');
 let vaultFilter='All', packPlaying=null;
@@ -753,10 +826,13 @@ function syncCanvasSize(canvas){
 const packWaveCtxs=[], packWaveEls=[];
 PACKS.forEach((p,i)=>{
   const el=document.createElement('div'); el.className='pack-card';
+  const priceHtml = p.wasPrice
+    ? `<span class="pack-price-was">${p.wasPrice}</span><span class="pack-price">${p.price}</span>`
+    : `<span class="pack-price">${p.price}</span>`;
   el.innerHTML=`<div class="pack-genre">${p.genre}</div><div class="pack-title">${p.name}</div>
-    <div class="pack-meta">${p.bpm} BPM · ${p.key}</div>
+    <div class="pack-meta">${p.bpm} BPM · ${p.key} · ${p.count}</div>
     <canvas class="pack-wave" width="170" height="28"></canvas>
-    <div class="pack-controls"><button class="pack-play" data-idx="${i}">▶</button><div class="pack-price">${p.price}</div></div>`;
+    <div class="pack-controls"><button class="pack-play" data-idx="${i}">▶</button><div class="pack-price-wrap">${priceHtml}</div></div>`;
   vaultGrid.appendChild(el);
   const waveEl = el.querySelector('.pack-wave');
   syncCanvasSize(waveEl);
@@ -1109,6 +1185,13 @@ requestAnimationFrame(scTick);
 
 if(hoverCapable){
   document.querySelectorAll('.tp-play').forEach(el=>addMagnetic(el, 0.15));
+}
+
+/* jump straight to a section if the page was loaded with a #hash — all content
+   above is populated by this point, so it's safe to show any section now */
+if(location.hash){
+  const initialKey = location.hash.slice(1);
+  if(sectionMap[initialKey]) goTo(initialKey, false);
 }
 </script>
 </body>
