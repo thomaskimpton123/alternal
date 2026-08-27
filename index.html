@@ -300,12 +300,12 @@
   .vault-access-price{font-family:var(--display);font-weight:600;color:#fff;font-size:13px}
 
   /* ── site-wide jump menu ── */
-  .site-menu-btn{position:fixed;bottom:calc(22px + env(safe-area-inset-bottom));right:22px;z-index:25;
+  .site-menu-btn{position:fixed;bottom:calc(22px + env(safe-area-inset-bottom));left:22px;z-index:25;
     width:46px;height:46px;border-radius:50%;background:rgba(20,18,28,.75);border:1px solid rgba(255,255,255,.15);
     backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;cursor:pointer;
     font-size:16px;color:#fff;transition:.25s;pointer-events:auto}
   .site-menu-btn:hover{border-color:var(--violet);box-shadow:0 0 20px rgba(139,92,246,.3)}
-  .site-menu{position:fixed;bottom:calc(78px + env(safe-area-inset-bottom));right:22px;z-index:25;
+  .site-menu{position:fixed;bottom:calc(78px + env(safe-area-inset-bottom));left:22px;z-index:25;
     background:rgba(15,13,20,.92);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:8px;
     backdrop-filter:blur(12px);display:flex;flex-direction:column;gap:2px;
     opacity:0;visibility:hidden;transform:translateY(8px);pointer-events:none;
@@ -313,7 +313,7 @@
   .site-menu.open{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto;
     transition:opacity .25s ease,transform .25s ease,visibility 0s linear 0s}
   .site-menu-item{padding:10px 20px;font-size:12px;letter-spacing:.5px;color:var(--dim);
-    cursor:pointer;border-radius:8px;transition:.2s;white-space:nowrap;text-align:right}
+    cursor:pointer;border-radius:8px;transition:.2s;white-space:nowrap;text-align:left}
   .site-menu-item:hover{color:#fff;background:rgba(139,92,246,.15)}
 
   .pill,.magbtn,#enterBtn,#scBack,#scNext,#pgBack,#pgNext,#ctaBack,#proofBack,#proofNext,#faqBack,#toFaqDirect,#toFaq,#vaultBack,#vaultNext,.tp-play,.pack-play,.filter-chip{touch-action:manipulation}
@@ -696,7 +696,8 @@ const hero=document.getElementById('hero'), beyond=document.getElementById('beyo
   flash=document.getElementById('flash'), navEl=document.getElementById('nav'),
   passages=document.getElementById('passages'), cta=document.getElementById('cta'),
   proof=document.getElementById('proof'), faq=document.getElementById('faq'),
-  vault=document.getElementById('vault'), blog=document.getElementById('blog');
+  vault=document.getElementById('vault'), blog=document.getElementById('blog'),
+  enterBtn=document.getElementById('enterBtn');
 
 /* ── site-wide section jump menu + hash routing ── */
 const sectionMap = {showcase:beyond, vault, passages, echoes:proof, contact:cta, faq, blog};
@@ -713,7 +714,7 @@ function goTo(key, pushHash){
   if(key==='hero'){
     Object.values(sectionMap).forEach(hideSectionEl);
     crossed=false; camera.position.z=14; hero.style.opacity=1;
-    navEl.style.visibility='visible'; navEl.style.opacity=1; navEl.style.transform='translateY(0)'; navEl.style.pointerEvents='auto';
+    enterBtn.style.display='';   // Enter pill is a hero-only CTA
     deselectPanel();
   } else {
     const target = sectionMap[key];
@@ -721,10 +722,9 @@ function goTo(key, pushHash){
     Object.entries(sectionMap).forEach(([k,el])=>{ if(k!==key) hideSectionEl(el); });
     if(!crossed){
       crossed=true; hero.style.opacity=0;
-      navEl.style.opacity=0; navEl.style.transform='translateY(-12px)'; navEl.style.pointerEvents='none';
-      setTimeout(()=>{ if(navEl.style.opacity=='0') navEl.style.visibility='hidden'; }, 500);
       camera.position.z = 14-20;
     }
+    enterBtn.style.display='none';   // hide hero CTA; the nav itself stays visible on every section
     showSectionEl(target);
   }
   closeSiteMenu();
@@ -760,8 +760,7 @@ function flyThrough(){
   flying=true; crossed=true;
   const myToken=++flyToken;
   hero.style.opacity=0;
-  navEl.style.opacity=0; navEl.style.transform='translateY(-12px)'; navEl.style.pointerEvents='none';
-  setTimeout(()=>{ if(navEl.style.opacity=='0') navEl.style.visibility='hidden'; }, 500);
+  enterBtn.style.display='none';   // Enter pill is hero-only; nav stays visible through the fly-through
   const start=performance.now(), dur=1100;
   const startZ=camera.position.z;
   function step(now){
@@ -792,11 +791,11 @@ document.getElementById('scBack').addEventListener('click', ()=>{
   beyond.style.opacity=0; beyond.style.pointerEvents='none'; setTimeout(()=>{ if(beyond.style.opacity=='0') beyond.style.visibility='hidden'; }, 800);
   camera.position.z=14;
   hero.style.opacity=1;
-  navEl.style.visibility='visible'; navEl.style.opacity=1; navEl.style.transform='translateY(0)'; navEl.style.pointerEvents='auto';
+  enterBtn.style.display='';   // back at the hero → restore the Enter CTA
   deselectPanel();
 });
 const navSpans=document.querySelectorAll('.navlinks span');
-navSpans[0].addEventListener('click', flyThrough);            // Sound → fly into showcase
+navSpans[0].addEventListener('click', ()=>{ if(crossed) goTo('showcase'); else flyThrough(); }); // Sound → showcase (fly from hero, jump from a section)
 navSpans[1].addEventListener('click', ()=>goTo('passages'));  // Process
 navSpans[2].addEventListener('click', ()=>goTo('contact'));   // Contact
 navEl.querySelector('.glyph').addEventListener('click', ()=>goTo('hero')); // logo → home
