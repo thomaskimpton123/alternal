@@ -772,13 +772,22 @@ function flyThrough(){
     if(p<1){ requestAnimationFrame(step); }
     else{
       beyond.style.visibility='visible'; beyond.style.opacity=1; beyond.style.pointerEvents='auto';
+      if(location.hash!=='#showcase') history.pushState(null,'','#showcase');
       flying=false;
     }
   }
   requestAnimationFrame(step);
 }
 
-window.addEventListener('wheel', e=>{ if(e.deltaY>0) flyThrough(); }, {passive:true});
+let wheelTravel=0, wheelResetTimer=null;
+window.addEventListener('wheel', e=>{
+  if(crossed||flying) return;
+  if(e.deltaY<=0){ wheelTravel=0; return; }
+  wheelTravel += e.deltaY;
+  clearTimeout(wheelResetTimer);
+  wheelResetTimer=setTimeout(()=>{ wheelTravel=0; }, 180);
+  if(wheelTravel>=48){ wheelTravel=0; flyThrough(); }
+}, {passive:true});
 let touchStartY=null;
 window.addEventListener('touchstart', e=>{ touchStartY=e.touches[0].clientY; }, {passive:true});
 window.addEventListener('touchmove', e=>{
@@ -787,12 +796,8 @@ window.addEventListener('touchmove', e=>{
 document.getElementById('enterBtn').addEventListener('click', flyThrough);
 
 document.getElementById('scBack').addEventListener('click', ()=>{
-  crossed=false;
-  beyond.style.opacity=0; beyond.style.pointerEvents='none'; setTimeout(()=>{ if(beyond.style.opacity=='0') beyond.style.visibility='hidden'; }, 800);
-  camera.position.z=14;
-  hero.style.opacity=1;
-  enterBtn.style.display='';   // back at the hero → restore the Enter CTA
   deselectPanel();
+  goTo('hero');
 });
 const navSpans=document.querySelectorAll('.navlinks span');
 navSpans[0].addEventListener('click', ()=>{ if(crossed) goTo('showcase'); else flyThrough(); }); // Sound → showcase (fly from hero, jump from a section)
@@ -802,51 +807,41 @@ navEl.querySelector('.glyph').addEventListener('click', ()=>goTo('hero')); // lo
 
 /* ── passages navigation ── */
 document.getElementById('scNext').addEventListener('click', ()=>{
-  beyond.style.opacity=0; beyond.style.pointerEvents='none'; setTimeout(()=>{ if(beyond.style.opacity=='0') beyond.style.visibility='hidden'; }, 800);
   deselectPanel();
-  vault.style.visibility='visible'; vault.style.opacity=1; vault.style.pointerEvents='auto';
+  goTo('vault');
 });
 document.getElementById('vaultBack').addEventListener('click', ()=>{
-  vault.style.opacity=0; vault.style.pointerEvents='none'; setTimeout(()=>{ if(vault.style.opacity=='0') vault.style.visibility='hidden'; }, 800);
-  beyond.style.visibility='visible'; beyond.style.opacity=1; beyond.style.pointerEvents='auto';
+  goTo('showcase');
 });
 document.getElementById('vaultNext').addEventListener('click', ()=>{
-  vault.style.opacity=0; vault.style.pointerEvents='none'; setTimeout(()=>{ if(vault.style.opacity=='0') vault.style.visibility='hidden'; }, 800);
-  passages.style.visibility='visible'; passages.style.opacity=1; passages.style.pointerEvents='auto';
+  goTo('passages');
 });
 document.getElementById('pgBack').addEventListener('click', ()=>{
-  passages.style.opacity=0; passages.style.pointerEvents='none'; setTimeout(()=>{ if(passages.style.opacity=='0') passages.style.visibility='hidden'; }, 800);
-  vault.style.visibility='visible'; vault.style.opacity=1; vault.style.pointerEvents='auto';
+  goTo('vault');
 });
 document.getElementById('pgNext').addEventListener('click', ()=>{
-  passages.style.opacity=0; passages.style.pointerEvents='none'; setTimeout(()=>{ if(passages.style.opacity=='0') passages.style.visibility='hidden'; }, 800);
-  proof.style.visibility='visible'; proof.style.opacity=1; proof.style.pointerEvents='auto';
+  goTo('echoes');
   startQuoteRotation();
 });
 document.getElementById('proofBack').addEventListener('click', ()=>{
-  proof.style.opacity=0; proof.style.pointerEvents='none'; setTimeout(()=>{ if(proof.style.opacity=='0') proof.style.visibility='hidden'; }, 800);
-  passages.style.visibility='visible'; passages.style.opacity=1; passages.style.pointerEvents='auto';
   clearInterval(quoteTimer);
+  goTo('passages');
 });
 document.getElementById('proofNext').addEventListener('click', ()=>{
-  proof.style.opacity=0; proof.style.pointerEvents='none'; setTimeout(()=>{ if(proof.style.opacity=='0') proof.style.visibility='hidden'; }, 800);
-  cta.style.visibility='visible'; cta.style.opacity=1; cta.style.pointerEvents='auto';
   clearInterval(quoteTimer);
+  goTo('contact');
 });
 document.getElementById('ctaBack').addEventListener('click', ()=>{
-  cta.style.opacity=0; cta.style.pointerEvents='none'; setTimeout(()=>{ if(cta.style.opacity=='0') cta.style.visibility='hidden'; }, 800);
-  proof.style.visibility='visible'; proof.style.opacity=1; proof.style.pointerEvents='auto';
+  goTo('echoes');
   startQuoteRotation();
 });
 function goToFaq(){
-  cta.style.opacity=0; cta.style.pointerEvents='none'; setTimeout(()=>{ if(cta.style.opacity=='0') cta.style.visibility='hidden'; }, 800);
-  faq.style.visibility='visible'; faq.style.opacity=1; faq.style.pointerEvents='auto';
+  goTo('faq');
 }
 document.getElementById('toFaqDirect').addEventListener('click', goToFaq);
 document.getElementById('toFaq').addEventListener('click', goToFaq);
 document.getElementById('faqBack').addEventListener('click', ()=>{
-  faq.style.opacity=0; faq.style.pointerEvents='none'; setTimeout(()=>{ if(faq.style.opacity=='0') faq.style.visibility='hidden'; }, 800);
-  cta.style.visibility='visible'; cta.style.opacity=1; cta.style.pointerEvents='auto';
+  goTo('contact');
 });
 
 /* ── proof: rotating testimonials ── */
@@ -1159,24 +1154,29 @@ function ensureAnalyser(){
 function fmtTime(s){ const m=Math.floor(s/60), sec=Math.floor(s%60); return `${m}:${sec.toString().padStart(2,'0')}`; }
 async function ensurePeaks(i){
   if(TRACKS[i].peaks) return TRACKS[i].peaks;
-  const res = await fetch(TRACKS[i].file);
-  const arr = await res.arrayBuffer();
-  const audioBuf = await audioCtx.decodeAudioData(arr);
-  const raw = audioBuf.getChannelData(0);
-  const barsCount = 40;
-  const blockSize = Math.floor(raw.length/barsCount);
-  const peaks = [];
-  for(let b=0;b<barsCount;b++){
-    let max=0;
-    for(let j=0;j<blockSize;j++){ const v=Math.abs(raw[b*blockSize+j]); if(v>max) max=v; }
-    peaks.push(max);
-  }
-  const norm = Math.max(...peaks, 0.001);
-  TRACKS[i].peaks = peaks.map(p=>p/norm);
-  TRACKS[i].duration = audioBuf.duration;
-  const durEl = panelEls[i].querySelector('.tp-dur');
-  if(durEl) durEl.textContent = fmtTime(audioBuf.duration);
-  return TRACKS[i].peaks;
+  if(TRACKS[i].peaksPromise) return TRACKS[i].peaksPromise;
+  TRACKS[i].peaksPromise=(async()=>{
+    const res = await fetch(TRACKS[i].file);
+    if(!res.ok) throw new Error(`Audio fetch failed (${res.status}): ${TRACKS[i].file}`);
+    const arr = await res.arrayBuffer();
+    const audioBuf = await audioCtx.decodeAudioData(arr);
+    const raw = audioBuf.getChannelData(0);
+    const barsCount = 40;
+    const blockSize = Math.floor(raw.length/barsCount);
+    const peaks = [];
+    for(let b=0;b<barsCount;b++){
+      let max=0;
+      for(let j=0;j<blockSize;j++){ const v=Math.abs(raw[b*blockSize+j]); if(v>max) max=v; }
+      peaks.push(max);
+    }
+    const norm = Math.max(...peaks, 0.001);
+    TRACKS[i].peaks = peaks.map(p=>p/norm);
+    TRACKS[i].duration = audioBuf.duration;
+    const durEl = panelEls[i].querySelector('.tp-dur');
+    if(durEl) durEl.textContent = fmtTime(audioBuf.duration);
+    return TRACKS[i].peaks;
+  })().finally(()=>{ TRACKS[i].peaksPromise=null; });
+  return TRACKS[i].peaksPromise;
 }
 function drawRealWave(ctx, peaks, progress){
   const w=ctx.canvas.width, h=ctx.canvas.height;
@@ -1251,7 +1251,8 @@ TRACKS.forEach((tr,i)=>{
   waveCtxs.push(tpWaveEl.getContext('2d'));
   playing.push(false);
 });
-TRACKS.forEach((tr,i)=>{ ensurePeaks(i).then(peaks=>drawRealWave(waveCtxs[i], peaks, currentTrackIdx===i ? null : 0)); });
+// Draw lightweight placeholders now; fetch/decode a track only after the user asks to play it.
+TRACKS.forEach((tr,i)=>{ drawWave(waveCtxs[i], i+21, 0, false); });
 
 scStage.addEventListener('click', e=>{
   if(e.target===scStage && activeIdx!==null) deselectPanel();
@@ -1288,15 +1289,20 @@ scStage.addEventListener('click', async e=>{
     const prevBtn=panelEls[currentTrackIdx].querySelector('.tp-play');
     if(prevBtn) prevBtn.textContent='▶';
   }
-  if(currentTrackIdx!==idx){
-    sharedAudio.src = TRACKS[idx].file;
-    currentTrackIdx = idx;
-    await ensurePeaks(idx);
+  try{
+    if(currentTrackIdx!==idx){
+      sharedAudio.src = TRACKS[idx].file;
+      currentTrackIdx = idx;
+      await ensurePeaks(idx);
+    }
+    ensureAnalyser();
+    if(audioCtx.state==='suspended') await audioCtx.resume();
+    await sharedAudio.play();
+    btn.textContent='❚❚';
+  }catch(err){
+    btn.textContent='▶';
+    console.error('Unable to play track', err);
   }
-  ensureAnalyser();
-  if(audioCtx.state==='suspended') audioCtx.resume();
-  sharedAudio.play();
-  btn.textContent='❚❚';
 });
 
 // drag to orbit
