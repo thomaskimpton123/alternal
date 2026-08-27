@@ -259,6 +259,19 @@
     letter-spacing:.5px;text-transform:uppercase;color:var(--dim);cursor:pointer;transition:.2s;background:none}
   .filter-chip.active{background:rgba(139,92,246,.22);border-color:var(--violet);color:#fff}
   .vault-grid{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;max-width:780px;margin:18px 0;pointer-events:auto}
+  .vault-collections{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:16px 0 6px;pointer-events:auto}
+  .collection-chip{border:1px solid rgba(34,229,234,.22);border-radius:24px;padding:8px 16px;background:rgba(34,229,234,.05);
+    color:var(--dim);font:500 10px var(--sans);letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:.2s}
+  .collection-chip.active,.collection-chip:hover{color:#fff;border-color:var(--cyan);background:rgba(34,229,234,.12);box-shadow:0 0 18px rgba(34,229,234,.12)}
+  .vault-discovery{width:100%;max-width:780px;margin:10px 0 0;padding:14px;border:1px solid rgba(255,255,255,.1);
+    border-radius:14px;background:rgba(15,13,20,.48);display:grid;grid-template-columns:repeat(5,minmax(110px,1fr));gap:9px;pointer-events:auto}
+  .vault-select{display:flex;flex-direction:column;gap:5px;text-align:left}
+  .vault-select label{font-size:8px;letter-spacing:1.4px;text-transform:uppercase;color:#5a5768}
+  .vault-select select{width:100%;background:#15121d;border:1px solid rgba(255,255,255,.13);border-radius:9px;padding:8px 9px;
+    color:#d9d3f0;font:11px var(--sans);outline:none}
+  .vault-select select:focus{border-color:var(--violet)}
+  .vault-results{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;font-size:10px;color:#5a5768;text-align:left}
+  .vault-reset{background:none;border:0;color:var(--cyan);font:10px var(--sans);cursor:pointer;padding:0}
   .pack-card{width:200px;background:rgba(20,18,28,.55);border:1px solid rgba(255,255,255,.12);border-radius:14px;
     padding:16px 18px;text-align:left;transition:border-color .25s,box-shadow .25s}
   .pack-card:hover{border-color:rgba(139,92,246,.5);box-shadow:0 0 24px rgba(139,92,246,.2)}
@@ -276,6 +289,8 @@
   .pack-card.hidden{display:none}
   .pack-genre{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--cyan)}
   .pack-title{font-family:var(--display);font-size:15px;font-weight:500;color:#fff;margin-top:6px}
+  .pack-creator{background:none;border:0;padding:0;margin-top:5px;color:#777386;font:10px var(--sans);cursor:pointer;text-align:left}
+  .pack-creator:hover{color:var(--cyan)}
   .pack-meta{font-size:11px;color:var(--dim);margin-top:4px}
   .pack-rating{display:flex;align-items:center;gap:6px;margin-top:6px}
   .pack-stars{font-size:11px;color:#f5c518;letter-spacing:1px}
@@ -288,6 +303,48 @@
   .pack-price-wrap{display:flex;align-items:baseline;gap:6px}
   .pack-price{font-family:var(--display);font-size:13px;color:#fff}
   .pack-price-was{font-size:11px;color:#5a5768;text-decoration:line-through}
+  .pack-detail-toggle{width:100%;margin-top:8px;background:none;border:0;color:#777386;font:9px var(--sans);
+    letter-spacing:.8px;text-transform:uppercase;cursor:pointer;text-align:center}
+  .pack-detail-toggle:hover{color:var(--cyan)}
+  .pack-anatomy{max-height:0;overflow:hidden;transition:max-height .3s ease;border-top:1px solid transparent}
+  .pack-card.detail-open .pack-anatomy{max-height:260px;margin-top:8px;padding-top:8px;border-color:rgba(255,255,255,.08)}
+  .anatomy-row{display:flex;justify-content:space-between;gap:10px;padding:4px 0;font-size:9.5px;color:#5a5768}
+  .anatomy-row strong{color:#b7b2c5;font-weight:500;text-align:right}
+  .license-panel{width:100%;max-width:780px;margin:6px 0 12px;padding:15px 18px;border:1px solid rgba(34,229,234,.18);
+    border-radius:14px;background:linear-gradient(90deg,rgba(34,229,234,.06),rgba(139,92,246,.06));display:flex;align-items:center;gap:14px;text-align:left}
+  .license-mark{width:34px;height:34px;border-radius:50%;border:1px solid rgba(34,229,234,.45);display:flex;align-items:center;justify-content:center;color:var(--cyan);flex:none}
+  .license-copy strong{display:block;font:500 12px var(--display);color:#fff;margin-bottom:3px}
+  .license-copy span{display:block;font-size:10.5px;line-height:1.5;color:var(--dim)}
+  .license-copy small{display:block;margin-top:4px;color:#5a5768;font-size:9px}
+  .creator-modal{position:fixed;inset:0;z-index:40;background:rgba(5,5,7,.82);backdrop-filter:blur(12px);display:flex;align-items:center;
+    justify-content:center;padding:20px;opacity:0;visibility:hidden;pointer-events:none;transition:.25s}
+  .creator-modal.open{opacity:1;visibility:visible;pointer-events:auto}
+  .creator-card{width:min(430px,100%);background:#15121d;border:1px solid rgba(139,92,246,.4);border-radius:20px;padding:26px;text-align:left;position:relative}
+  .creator-close{position:absolute;top:12px;right:14px;border:0;background:none;color:var(--dim);font-size:18px;cursor:pointer}
+  .creator-avatar{width:54px;height:54px;border-radius:16px;background:linear-gradient(135deg,var(--violet),var(--cyan));display:flex;align-items:center;
+    justify-content:center;font:600 18px var(--display);color:#fff;margin-bottom:14px}
+  .creator-name{font:600 21px var(--display);color:#fff}
+  .creator-role{font-size:10px;color:var(--cyan);letter-spacing:1px;text-transform:uppercase;margin-top:4px}
+  .creator-story{font-size:12px;color:var(--dim);line-height:1.7;margin:14px 0}
+  .creator-stats{display:flex;gap:20px;border-top:1px solid rgba(255,255,255,.09);padding-top:14px;font-size:10px;color:#5a5768}
+  .creator-stats strong{display:block;color:#fff;font:600 15px var(--display)}
+
+  .audition-queue{position:fixed;left:50%;bottom:18px;z-index:24;width:min(680px,calc(100% - 150px));transform:translate(-50%,130%);
+    opacity:0;pointer-events:none;transition:.35s;background:rgba(15,13,20,.94);border:1px solid rgba(139,92,246,.4);border-radius:16px;
+    backdrop-filter:blur(14px);padding:10px 13px;display:flex;align-items:center;gap:12px;box-shadow:0 12px 40px rgba(0,0,0,.4)}
+  .audition-queue.open{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+  .queue-controls{display:flex;gap:5px;flex:none}
+  .queue-btn{width:28px;height:28px;border-radius:50%;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:#fff;cursor:pointer}
+  .queue-btn:hover{border-color:var(--violet)}
+  .queue-now{min-width:0;flex:1;text-align:left}
+  .queue-label{font-size:8px;color:var(--cyan);letter-spacing:1.4px;text-transform:uppercase}
+  .queue-title{font:500 12px var(--display);color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+  .queue-list{display:flex;gap:5px;overflow-x:auto;max-width:250px;scrollbar-width:none}
+  .queue-item{border:1px solid rgba(255,255,255,.1);border-radius:8px;background:none;color:var(--dim);font:9px var(--sans);padding:6px 8px;white-space:nowrap;cursor:pointer}
+  .queue-item.active{color:#fff;border-color:var(--cyan);background:rgba(34,229,234,.08)}
+  .queue-clear{background:none;border:0;color:#5a5768;font-size:14px;cursor:pointer;flex:none}
+  .tp-queue{margin-left:auto;border:0;background:none;color:#777386;font:9px var(--sans);cursor:pointer;text-transform:uppercase;letter-spacing:.5px}
+  .tp-queue:hover,.tp-queue.queued{color:var(--cyan)}
   .vault-email{display:flex;gap:8px;margin:20px 0 6px;max-width:340px;width:100%;pointer-events:auto}
   .vault-email input{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);border-radius:24px;
     padding:9px 16px;color:#fff;font-size:12.5px;font-family:var(--sans);outline:none}
@@ -332,6 +389,12 @@
     .proof-marquee{font-size:11px}
     .quote-wrap,.faq-list,footer.site-footer{max-width:100%}
     .pack-card{width:100%;max-width:280px}
+    .vault-discovery{grid-template-columns:repeat(2,minmax(0,1fr));max-width:340px}
+    .vault-select:last-of-type{grid-column:1/-1}
+    .license-panel{max-width:340px}
+    .audition-queue{left:72px;right:14px;bottom:14px;width:auto;transform:translateY(130%)}
+    .audition-queue.open{transform:translateY(0)}
+    .queue-list{display:none}
     #beyond h2,.pg-h2{font-size:clamp(24px,7vw,34px)}
     .cta-h2{font-size:clamp(22px,7vw,32px)}
     .sc-note{font-size:11px;padding:0 4px}
@@ -407,8 +470,18 @@
   <h2 class="pg-h2">The Vault</h2>
   <div class="sc-note">Loops &amp; one-shots pulled from the same sessions as the tracks above — new packs added every month. (Placeholder packs &amp; previews — swap in your real catalog and checkout when ready.)</div>
   <div class="vault-access"><span class="vault-access-price">$12/mo</span> full Vault access, new packs monthly — or grab packs individually below</div>
+  <div class="vault-collections" id="vaultCollections"></div>
+  <div class="vault-discovery">
+    <div class="vault-select"><label for="typeFilter">Sound type</label><select id="typeFilter"></select></div>
+    <div class="vault-select"><label for="bpmFilter">BPM</label><select id="bpmFilter"><option value="All">Any tempo</option><option value="slow">Under 90</option><option value="mid">90–119</option><option value="fast">120+</option></select></div>
+    <div class="vault-select"><label for="keyFilter">Key</label><select id="keyFilter"></select></div>
+    <div class="vault-select"><label for="formatFilter">Format</label><select id="formatFilter"></select></div>
+    <div class="vault-select"><label for="dawFilter">Works with</label><select id="dawFilter"></select></div>
+    <div class="vault-results"><span id="vaultResultCount">6 packs available</span><button class="vault-reset" id="vaultReset">Reset filters</button></div>
+  </div>
   <div class="vault-filters" id="vaultFilters"></div>
   <div class="vault-grid" id="vaultGrid"></div>
+  <div class="license-panel"><div class="license-mark">✓</div><div class="license-copy"><strong>Cleared for commercial releases</strong><span>Every Vault pack is royalty-free for music, video and client work after purchase. No recurring royalties or attribution required.</span><small>Prototype policy — final licence terms will be legally reviewed before checkout goes live.</small></div></div>
   <div class="vault-email-note">Get a free starter pack when it drops</div>
   <form class="vault-email" id="vaultEmailForm">
     <input type="email" placeholder="you@email.com" required />
@@ -524,6 +597,16 @@
   <div class="site-menu-item" data-jump="echoes">Echoes</div>
   <div class="site-menu-item" data-jump="contact">Contact</div>
   <div class="site-menu-item" data-jump="blog">Transmissions Log</div>
+</div>
+
+<div class="creator-modal" id="creatorModal" role="dialog" aria-modal="true" aria-labelledby="creatorName">
+  <div class="creator-card"><button class="creator-close" id="creatorClose" aria-label="Close creator profile">×</button><div id="creatorContent"></div></div>
+</div>
+
+<div class="audition-queue" id="auditionQueue" aria-live="polite">
+  <div class="queue-controls"><button class="queue-btn" id="queuePrev" aria-label="Previous track">‹</button><button class="queue-btn" id="queuePlay" aria-label="Play or pause">▶</button><button class="queue-btn" id="queueNext" aria-label="Next track">›</button></div>
+  <div class="queue-now"><div class="queue-label">Audition queue</div><div class="queue-title" id="queueTitle">Choose a transmission</div></div>
+  <div class="queue-list" id="queueList"></div><button class="queue-clear" id="queueClear" aria-label="Clear audition queue">×</button>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
@@ -900,28 +983,65 @@ document.getElementById('blogBack').addEventListener('click', ()=>{ goTo('showca
 
 /* ── vault: sample packs ── */
 const PACKS=[
-  {name:"MIDNIGHT DRIFT", genre:"Lo-Fi", bpm:82, key:"Cm", price:"$18", count:"32 loops", rating:4.8, reviews:24, seed:11},
-  {name:"STATIC BLOOM", genre:"Techno", bpm:128, key:"Am", price:"$18", wasPrice:"$24", count:"48 one-shots", rating:4.6, reviews:41, seed:12},
-  {name:"HOLLOW ORBIT", genre:"Ambient", bpm:70, key:"—", price:"$15", count:"60+ textures", rating:4.9, reviews:17, seed:13},
-  {name:"RIFT KICKS", genre:"Trap", bpm:140, key:"Gm", price:"$20", count:"40 drum loops", rating:4.7, reviews:33, seed:14},
-  {name:"AFTERGLOW", genre:"House", bpm:122, key:"Fm", price:"$15", wasPrice:"$22", count:"36 loops", rating:4.5, reviews:19, seed:15},
-  {name:"PALE SIGNAL", genre:"Ambient", bpm:65, key:"Dm", price:"$15", count:"55+ atmospheres", rating:4.8, reviews:12, seed:16},
+  {name:"MIDNIGHT DRIFT", genre:"Lo-Fi", bpm:82, key:"Cm", type:"Loops", format:"WAV", daw:"All DAWs", collection:"After Dark", creator:"Mira Vale", price:"$18", count:"32 loops", size:"486 MB", contents:"20 melodic · 8 drums · 4 textures", rating:4.8, reviews:24, seed:11},
+  {name:"STATIC BLOOM", genre:"Techno", bpm:128, key:"Am", type:"One-shots", format:"WAV", daw:"Ableton", collection:"Club Tools", creator:"Circuit Ghost", price:"$18", wasPrice:"$24", count:"48 one-shots", size:"312 MB", contents:"24 drums · 16 synths · 8 FX", rating:4.6, reviews:41, seed:12},
+  {name:"HOLLOW ORBIT", genre:"Ambient", bpm:70, key:"—", type:"Textures", format:"WAV", daw:"All DAWs", collection:"Cinematic Worlds", creator:"Mira Vale", price:"$15", count:"60+ textures", size:"1.1 GB", contents:"36 atmospheres · 16 drones · 8 impacts", rating:4.9, reviews:17, seed:13},
+  {name:"RIFT KICKS", genre:"Trap", bpm:140, key:"Gm", type:"Drums", format:"WAV", daw:"FL Studio", collection:"Club Tools", creator:"North Arc", price:"$20", count:"40 drum loops", size:"628 MB", contents:"20 kicks · 12 hats · 8 percussion", rating:4.7, reviews:33, seed:14},
+  {name:"AFTERGLOW", genre:"House", bpm:122, key:"Fm", type:"MIDI + Loops", format:"MIDI", daw:"Logic", collection:"Essentials", creator:"Circuit Ghost", price:"$15", wasPrice:"$22", count:"36 loops", size:"274 MB", contents:"18 loops · 10 MIDI · 8 presets", rating:4.5, reviews:19, seed:15},
+  {name:"PALE SIGNAL", genre:"Ambient", bpm:65, key:"Dm", type:"Textures", format:"WAV", daw:"All DAWs", collection:"Cinematic Worlds", creator:"North Arc", price:"$15", count:"55+ atmospheres", size:"940 MB", contents:"30 atmospheres · 15 field sounds · 10 tails", rating:4.8, reviews:12, seed:16},
 ];
+const CREATORS={
+  "Mira Vale":{initials:"MV",role:"Composer · texture designer",story:"Mira builds warm, imperfect worlds from field recordings, cassette haze and slowly detuned instruments.",credits:"2 Vault packs",sounds:"92 sounds"},
+  "Circuit Ghost":{initials:"CG",role:"Club producer · sound designer",story:"Circuit Ghost turns late-night hardware sessions into focused drums, synth movement and club-ready building blocks.",credits:"2 Vault packs",sounds:"84 sounds"},
+  "North Arc":{initials:"NA",role:"Producer · rhythm specialist",story:"North Arc works at the edge of cinematic percussion and modern low-end, with every sound cut to survive a dense mix.",credits:"2 Vault packs",sounds:"95 sounds"},
+};
 function starsHtml(rating){
   const full = Math.round(rating);
   return '★'.repeat(full) + '☆'.repeat(5-full);
 }
 const vaultGrid=document.getElementById('vaultGrid'), vaultFilters=document.getElementById('vaultFilters');
-let vaultFilter='All', packPlaying=null;
+const vaultCollections=document.getElementById('vaultCollections'), vaultResultCount=document.getElementById('vaultResultCount');
+const typeFilter=document.getElementById('typeFilter'), bpmFilter=document.getElementById('bpmFilter'), keyFilter=document.getElementById('keyFilter');
+const formatFilter=document.getElementById('formatFilter'), dawFilter=document.getElementById('dawFilter');
+let vaultFilter='All', collectionFilter='All', packPlaying=null;
+function fillSelect(el,label,values){
+  el.innerHTML=`<option value="All">${label}</option>`+values.map(v=>`<option value="${v}">${v}</option>`).join('');
+}
+fillSelect(typeFilter,'All sound types',[...new Set(PACKS.map(p=>p.type))]);
+fillSelect(keyFilter,'Any key',[...new Set(PACKS.map(p=>p.key))]);
+fillSelect(formatFilter,'Any format',[...new Set(PACKS.map(p=>p.format))]);
+fillSelect(dawFilter,'Any DAW',[...new Set(PACKS.map(p=>p.daw))]);
+function applyVaultFilters(){
+  let visible=0;
+  vaultGrid.querySelectorAll('.pack-card').forEach((card,i)=>{
+    const p=PACKS[i], bpmBand=p.bpm<90?'slow':p.bpm<120?'mid':'fast';
+    const show=(vaultFilter==='All'||p.genre===vaultFilter)&&(collectionFilter==='All'||p.collection===collectionFilter)&&
+      (typeFilter.value==='All'||p.type===typeFilter.value)&&(bpmFilter.value==='All'||bpmBand===bpmFilter.value)&&
+      (keyFilter.value==='All'||p.key===keyFilter.value)&&(formatFilter.value==='All'||p.format===formatFilter.value)&&
+      (dawFilter.value==='All'||p.daw===dawFilter.value||p.daw==='All DAWs');
+    card.classList.toggle('hidden',!show); if(show) visible++;
+  });
+  vaultResultCount.textContent=`${visible} pack${visible===1?'':'s'} match`;
+}
+['All',...new Set(PACKS.map(p=>p.collection))].forEach(name=>{
+  const chip=document.createElement('button'); chip.className='collection-chip'+(name==='All'?' active':'');
+  chip.textContent=name==='All'?'All collections':name;
+  chip.addEventListener('click',()=>{ collectionFilter=name; vaultCollections.querySelectorAll('.collection-chip').forEach(c=>c.classList.toggle('active',c===chip)); applyVaultFilters(); });
+  vaultCollections.appendChild(chip);
+});
+[typeFilter,bpmFilter,keyFilter,formatFilter,dawFilter].forEach(el=>el.addEventListener('change',applyVaultFilters));
+document.getElementById('vaultReset').addEventListener('click',()=>{
+  vaultFilter='All'; collectionFilter='All'; [typeFilter,bpmFilter,keyFilter,formatFilter,dawFilter].forEach(el=>el.value='All');
+  vaultFilters.querySelectorAll('.filter-chip').forEach((c,i)=>c.classList.toggle('active',i===0));
+  vaultCollections.querySelectorAll('.collection-chip').forEach((c,i)=>c.classList.toggle('active',i===0)); applyVaultFilters();
+});
 const GENRES=['All', ...new Set(PACKS.map(p=>p.genre))];
 GENRES.forEach(g=>{
   const chip=document.createElement('div'); chip.className='filter-chip'+(g==='All'?' active':''); chip.textContent=g;
   chip.addEventListener('click', ()=>{
     vaultFilter=g;
     vaultFilters.querySelectorAll('.filter-chip').forEach(c=>c.classList.toggle('active', c===chip));
-    vaultGrid.querySelectorAll('.pack-card').forEach((card,i)=>{
-      card.classList.toggle('hidden', g!=='All' && PACKS[i].genre!==g);
-    });
+    applyVaultFilters();
   });
   vaultFilters.appendChild(chip);
 });
@@ -946,11 +1066,14 @@ PACKS.forEach((p,i)=>{
       <span class="stem-label">${label}</span>
       <canvas class="stem-wave" width="80" height="16"></canvas>
     </div>`).join('');
-  el.innerHTML=`<div class="pack-genre">${p.genre}</div><div class="pack-title">${p.name}</div>
+  el.innerHTML=`<div class="pack-genre">${p.genre} · ${p.collection}</div><div class="pack-title">${p.name}</div>
+    <button class="pack-creator" data-creator="${p.creator}">by ${p.creator} ↗</button>
     <div class="pack-meta">${p.bpm} BPM · ${p.key} · ${p.count}</div>
     <div class="pack-rating"><span class="pack-stars">${starsHtml(p.rating)}</span><span class="pack-reviews">${p.rating.toFixed(1)} (${p.reviews})</span></div>
     <canvas class="pack-wave" width="170" height="28"></canvas>
     <div class="pack-controls"><button class="pack-play" data-idx="${i}">▶</button><div class="pack-price-wrap">${priceHtml}</div></div>
+    <button class="pack-detail-toggle" data-idx="${i}">Pack details ▾</button>
+    <div class="pack-anatomy"><div class="anatomy-row"><span>Inside</span><strong>${p.contents}</strong></div><div class="anatomy-row"><span>Download</span><strong>${p.size}</strong></div><div class="anatomy-row"><span>Format</span><strong>${p.format}</strong></div><div class="anatomy-row"><span>Compatibility</span><strong>${p.daw}</strong></div><div class="anatomy-row"><span>Licence</span><strong>Royalty-free</strong></div></div>
     <button class="pack-stems-toggle" data-idx="${i}">See stems ▾</button>
     <div class="pack-stems">${stemsHtml}</div>`;
   vaultGrid.appendChild(el);
@@ -968,6 +1091,8 @@ window.addEventListener('resize', ()=>{
   vaultGrid.querySelectorAll('.pack-card.stems-open .stem-wave').forEach(syncCanvasSize);
 });
 vaultGrid.addEventListener('click', e=>{
+  const creatorBtn=e.target.closest('.pack-creator');
+  if(creatorBtn){ openCreator(creatorBtn.dataset.creator); return; }
   const playBtn=e.target.closest('.pack-play');
   if(playBtn){
     const idx=parseInt(playBtn.dataset.idx,10);
@@ -988,6 +1113,11 @@ vaultGrid.addEventListener('click', e=>{
     if(opening) stemEls[idx].forEach(syncCanvasSize);
     return;
   }
+  const detailBtn=e.target.closest('.pack-detail-toggle');
+  if(detailBtn){
+    const card=detailBtn.closest('.pack-card'), opening=!card.classList.contains('detail-open');
+    card.classList.toggle('detail-open',opening); detailBtn.textContent=opening?'Hide details ▴':'Pack details ▾'; return;
+  }
   const stemBtn=e.target.closest('.stem-play');
   if(stemBtn){
     const pIdx=parseInt(stemBtn.dataset.pack,10), sIdx=parseInt(stemBtn.dataset.stem,10);
@@ -996,6 +1126,16 @@ vaultGrid.addEventListener('click', e=>{
     else{ stemPlaying.add(key); stemBtn.textContent='❚❚'; }
   }
 });
+const creatorModal=document.getElementById('creatorModal'), creatorContent=document.getElementById('creatorContent');
+function openCreator(name){
+  const c=CREATORS[name]; if(!c) return;
+  creatorContent.innerHTML=`<div class="creator-avatar">${c.initials}</div><div class="creator-name" id="creatorName">${name}</div><div class="creator-role">${c.role}</div><div class="creator-story">${c.story}</div><div class="creator-stats"><span><strong>${c.credits.split(' ')[0]}</strong>Vault packs</span><span><strong>${c.sounds.split(' ')[0]}</strong>sounds</span></div>`;
+  creatorModal.classList.add('open');
+}
+function closeCreator(){ creatorModal.classList.remove('open'); }
+document.getElementById('creatorClose').addEventListener('click',closeCreator);
+creatorModal.addEventListener('click',e=>{ if(e.target===creatorModal) closeCreator(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeCreator(); });
 let vaultLastT=null;
 function vaultTick(t){
   if(vaultLastT===null) vaultLastT=t;
@@ -1136,6 +1276,9 @@ const audioCtx = new (window.AudioContext||window.webkitAudioContext)();
 const sharedAudio = new Audio();
 sharedAudio.preload='none';
 let currentTrackIdx=null;
+let auditionQueue=[], queueCursor=-1;
+const auditionQueueEl=document.getElementById('auditionQueue'), queueList=document.getElementById('queueList');
+const queueTitle=document.getElementById('queueTitle'), queuePlay=document.getElementById('queuePlay');
 
 /* real audio-reactivity: an AnalyserNode tapped off sharedAudio drives the hero
    rift's pulse whenever a track is actually playing (see animate() above).
@@ -1205,7 +1348,51 @@ sharedAudio.addEventListener('ended', ()=>{
   if(currentTrackIdx!==null && TRACKS[currentTrackIdx].peaks){
     drawRealWave(waveCtxs[currentTrackIdx], TRACKS[currentTrackIdx].peaks, 0);
   }
+  queuePlay.textContent='▶';
+  if(auditionQueue.length>1) playQueueStep(1);
 });
+
+function renderQueue(){
+  auditionQueueEl.classList.toggle('open',auditionQueue.length>0);
+  queueList.innerHTML=auditionQueue.map((idx,pos)=>`<button class="queue-item${pos===queueCursor?' active':''}" data-pos="${pos}">${TRACKS[idx].title}</button>`).join('');
+  const active=auditionQueue[queueCursor]; queueTitle.textContent=active===undefined?'Choose a transmission':TRACKS[active].title;
+  panelEls.forEach((panel,idx)=>panel.querySelector('.tp-queue')?.classList.toggle('queued',auditionQueue.includes(idx)));
+}
+function addToQueue(idx){
+  const existing=auditionQueue.indexOf(idx);
+  if(existing<0) auditionQueue.push(idx);
+  if(queueCursor<0) queueCursor=existing<0?auditionQueue.length-1:existing;
+  renderQueue();
+}
+async function playTrack(idx){
+  const btn=panelEls[idx]?.querySelector('.tp-play');
+  if(currentTrackIdx!==null&&currentTrackIdx!==idx){
+    const prevBtn=panelEls[currentTrackIdx]?.querySelector('.tp-play'); if(prevBtn) prevBtn.textContent='▶';
+  }
+  try{
+    if(currentTrackIdx!==idx){ sharedAudio.src=TRACKS[idx].file; currentTrackIdx=idx; await ensurePeaks(idx); }
+    ensureAnalyser(); if(audioCtx.state==='suspended') await audioCtx.resume(); await sharedAudio.play();
+    if(btn) btn.textContent='❚❚'; queuePlay.textContent='❚❚';
+    const queuedPos=auditionQueue.indexOf(idx); if(queuedPos>=0) queueCursor=queuedPos;
+    renderQueue();
+  }catch(err){ if(btn) btn.textContent='▶'; queuePlay.textContent='▶'; console.error('Unable to play track',err); }
+}
+function playQueueStep(delta){
+  if(!auditionQueue.length) return;
+  queueCursor=(queueCursor+delta+auditionQueue.length)%auditionQueue.length; renderQueue(); playTrack(auditionQueue[queueCursor]);
+}
+document.getElementById('queuePrev').addEventListener('click',()=>playQueueStep(-1));
+document.getElementById('queueNext').addEventListener('click',()=>playQueueStep(1));
+queuePlay.addEventListener('click',()=>{
+  if(!auditionQueue.length) return;
+  const idx=auditionQueue[queueCursor];
+  if(currentTrackIdx===idx&&!sharedAudio.paused){
+    sharedAudio.pause(); const activeBtn=panelEls[idx]?.querySelector('.tp-play'); if(activeBtn) activeBtn.textContent='▶'; queuePlay.textContent='▶';
+  }
+  else playTrack(idx);
+});
+queueList.addEventListener('click',e=>{ const item=e.target.closest('.queue-item'); if(!item) return; queueCursor=Number(item.dataset.pos); renderQueue(); playTrack(auditionQueue[queueCursor]); });
+document.getElementById('queueClear').addEventListener('click',()=>{ sharedAudio.pause(); auditionQueue=[]; queueCursor=-1; queuePlay.textContent='▶'; renderQueue(); });
 
 const scFilters=document.getElementById('scFilters');
 const SC_GENRES=['All', ...new Set(TRACKS.map(t=>t.genre))];
@@ -1237,6 +1424,7 @@ TRACKS.forEach((tr,i)=>{
       <div class="tp-controls">
         <button class="tp-play" data-idx="${i}">▶</button>
         <span style="font-size:10px;color:#8a879a;letter-spacing:.5px">tap to play</span>
+        <button class="tp-queue" data-idx="${i}">＋ queue</button>
       </div>
     </div>`;
   el.addEventListener('click', (e)=>{
@@ -1277,6 +1465,8 @@ function deselectPanel(){
   sharedAudio.pause();
 }
 scStage.addEventListener('click', async e=>{
+  const queueBtn=e.target.closest('.tp-queue');
+  if(queueBtn){ addToQueue(parseInt(queueBtn.dataset.idx,10)); return; }
   const btn=e.target.closest('.tp-play');
   if(!btn) return;
   const idx=parseInt(btn.dataset.idx,10);
@@ -1285,24 +1475,7 @@ scStage.addEventListener('click', async e=>{
     btn.textContent='▶';
     return;
   }
-  if(currentTrackIdx!==null && currentTrackIdx!==idx){
-    const prevBtn=panelEls[currentTrackIdx].querySelector('.tp-play');
-    if(prevBtn) prevBtn.textContent='▶';
-  }
-  try{
-    if(currentTrackIdx!==idx){
-      sharedAudio.src = TRACKS[idx].file;
-      currentTrackIdx = idx;
-      await ensurePeaks(idx);
-    }
-    ensureAnalyser();
-    if(audioCtx.state==='suspended') await audioCtx.resume();
-    await sharedAudio.play();
-    btn.textContent='❚❚';
-  }catch(err){
-    btn.textContent='▶';
-    console.error('Unable to play track', err);
-  }
+  await playTrack(idx);
 });
 
 // drag to orbit
